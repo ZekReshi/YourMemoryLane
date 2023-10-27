@@ -1,20 +1,25 @@
 package at.jku.yourmemorylane.ui.map
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import at.jku.yourmemorylane.R
 import at.jku.yourmemorylane.databinding.FragmentMapBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+
 
 class MapFragment : Fragment(), OnMapReadyCallback{
 
@@ -24,6 +29,7 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     // onDestroyView.
     private val binding get() = _binding!!
     private lateinit var mMap: GoogleMap
+    private var locationManager: LocationManager? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -44,9 +50,9 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         mMap = googleMap
 
         // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        val wahli = LatLng(48.2711809, 14.5278233)
+        mMap.addMarker(MarkerOptions().position(wahli).title("Marker in R.i.d.R."))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(wahli, 15f))
     }
 
     override fun onDestroyView() {
