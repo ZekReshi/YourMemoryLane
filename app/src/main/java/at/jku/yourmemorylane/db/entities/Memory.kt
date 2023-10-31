@@ -7,9 +7,9 @@ import java.sql.Date
 
 @Entity
 data class Memory(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "title") val title: String,
-    //@ColumnInfo(name = "data") val dat: Date,
+    @ColumnInfo(name = "date") val date: String,
     @ColumnInfo(name = "longitude") val longitude: Int,
     @ColumnInfo(name = "latitude") val latitude: Int
 )

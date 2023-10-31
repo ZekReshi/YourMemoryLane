@@ -1,18 +1,14 @@
 package at.jku.yourmemorylane.ui.map
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.location.LocationManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import at.jku.yourmemorylane.R
 import at.jku.yourmemorylane.databinding.FragmentMapBinding
+import at.jku.yourmemorylane.db.AppDatabase
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -29,19 +25,20 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     // onDestroyView.
     private val binding get() = _binding!!
     private lateinit var mMap: GoogleMap
-    private var locationManager: LocationManager? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
+        val mapViewModel =
             ViewModelProvider(this)[MapViewModel::class.java]
 
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         val mapFragment = childFragmentManager.
             findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        AppDatabase.getInstance(this.requireContext())
 
         return binding.root;
     }
