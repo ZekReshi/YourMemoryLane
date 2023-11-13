@@ -2,12 +2,12 @@ package at.jku.yourmemorylane.adapters
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import at.jku.yourmemorylane.activities.EditActivity
 import at.jku.yourmemorylane.databinding.MemoryItemBinding
@@ -15,6 +15,7 @@ import at.jku.yourmemorylane.db.entities.Memory
 
 class MemoryAdapter(private val activity: Activity):
     ListAdapter<Memory, MemoryAdapter.MemoryHolder>(DIFF_CALLBACK) {
+    private lateinit var onClickListener: OnItemClickListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemoryHolder {
         val binding = MemoryItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -29,9 +30,9 @@ class MemoryAdapter(private val activity: Activity):
         with(holder.itemView) {
             tag = memory
             setOnClickListener { itemView ->
-                val item = itemView.tag as Memory
-                val intent = Intent(activity, EditActivity::class.java)
-                activity.startActivity(intent)
+                if (this@MemoryAdapter::onClickListener.isInitialized && position != NO_POSITION) {
+                    onClickListener.onItemClick(memory)
+                }
             }
         }
     }
@@ -39,6 +40,14 @@ class MemoryAdapter(private val activity: Activity):
     inner class MemoryHolder(binding: MemoryItemBinding) : ViewHolder(binding.root) {
         var textViewDate: TextView = binding.textViewDate
         var textViewTitle: TextView = binding.textViewTitle
+    }
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        onClickListener = listener
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(memory: Memory)
     }
 
     companion object {
