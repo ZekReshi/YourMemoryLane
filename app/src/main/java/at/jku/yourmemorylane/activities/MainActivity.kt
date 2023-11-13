@@ -1,4 +1,4 @@
-package at.jku.yourmemorylane
+package at.jku.yourmemorylane.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -13,7 +13,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private  lateinit var  navController: NavController;
+    private lateinit var navController: NavController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = binding.navView
         navView.setupWithNavController(navController)
     }
+
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,

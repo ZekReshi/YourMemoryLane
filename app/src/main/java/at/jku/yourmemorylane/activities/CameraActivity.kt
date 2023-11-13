@@ -1,4 +1,4 @@
-package at.jku.yourmemorylane.ui
+package at.jku.yourmemorylane.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -50,7 +50,7 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var useCaseGroup: UseCaseGroup
     private val DOUBLE_CLICK_TIME_DELTA: Long =300L;
     private var lastClickTime: Long = System.currentTimeMillis()
-    private var cameraMode :CameraMode = CameraMode.Picture;
+    private var cameraMode: CameraMode = CameraMode.Picture;
 
 
     private lateinit var binding: ActivityCameraBinding

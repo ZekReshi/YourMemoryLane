@@ -31,21 +31,27 @@ class ListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        listViewModel = ViewModelProvider(this)[ListViewModel::class.java]
 
         _binding = FragmentListBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        return binding.root
 
-        val recyclerView: RecyclerView = root.findViewById(R.id.memory_recycler_view)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val recyclerView: RecyclerView = binding.memoryRecyclerView
+
         recyclerView.layoutManager = LinearLayoutManager(this.context)
         recyclerView.setHasFixedSize(true)
 
-        val memoryAdapter = MemoryAdapter()
+        val memoryAdapter = MemoryAdapter(requireActivity())
         recyclerView.adapter = memoryAdapter
 
-        listViewModel.getMemories().observe(viewLifecycleOwner) { memories -> memoryAdapter.submitList(memories) }
 
-        return root
+
+        listViewModel = ViewModelProvider(this)[ListViewModel::class.java]
+        listViewModel.getMemories().observe(viewLifecycleOwner) { memories -> memoryAdapter.submitList(memories) }
     }
 
     override fun onDestroyView() {

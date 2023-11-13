@@ -1,40 +1,44 @@
 package at.jku.yourmemorylane.adapters
 
-import android.media.browse.MediaBrowser.ItemCallback
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import at.jku.yourmemorylane.R
+import at.jku.yourmemorylane.activities.EditActivity
+import at.jku.yourmemorylane.databinding.MemoryItemBinding
 import at.jku.yourmemorylane.db.entities.Memory
 
-class MemoryAdapter:
+class MemoryAdapter(private val activity: Activity):
     ListAdapter<Memory, MemoryAdapter.MemoryHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemoryHolder {
-        val itemView: View = LayoutInflater.from(parent.context)
-            .inflate(R.layout.memory_item, parent, false)
-        return MemoryHolder(itemView)
+        val binding = MemoryItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MemoryHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MemoryHolder, position: Int) {
-        val currentMemory: Memory = getItem(position)
-        holder.textViewDate.text = currentMemory.date
-        holder.textViewTitle.text = currentMemory.title
+        val memory: Memory = getItem(position)
+        holder.textViewDate.text = memory.date
+        holder.textViewTitle.text = memory.title
+
+        with(holder.itemView) {
+            tag = memory
+            setOnClickListener { itemView ->
+                val item = itemView.tag as Memory
+                val intent = Intent(activity, EditActivity::class.java)
+                activity.startActivity(intent)
+            }
+        }
     }
 
-    class MemoryHolder(itemView: View) : ViewHolder(itemView) {
-        var textViewDate: TextView
-        var textViewTitle: TextView
-
-        init {
-            textViewDate = itemView.findViewById(R.id.text_view_date)
-            textViewTitle = itemView.findViewById(R.id.text_view_title)
-        }
+    inner class MemoryHolder(binding: MemoryItemBinding) : ViewHolder(binding.root) {
+        var textViewDate: TextView = binding.textViewDate
+        var textViewTitle: TextView = binding.textViewTitle
     }
 
     companion object {

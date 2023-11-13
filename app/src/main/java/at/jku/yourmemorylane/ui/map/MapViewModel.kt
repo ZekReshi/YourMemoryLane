@@ -1,13 +1,26 @@
 package at.jku.yourmemorylane.ui.map
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import at.jku.yourmemorylane.db.AppDatabase
+import at.jku.yourmemorylane.db.daos.MemoryDao
+import at.jku.yourmemorylane.db.entities.Memory
 
-class MapViewModel : ViewModel() {
+class MapViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+    private val memoryDao: MemoryDao
+    private val memories: LiveData<List<Memory>>
+
+    fun getMemories(): LiveData<List<Memory>> {
+        return memories
     }
-    val text: LiveData<String> = _text
+
+    init {
+        memoryDao = AppDatabase.getInstance(application).memoryDao()
+        memories = memoryDao.getAll()
+    }
+
 }

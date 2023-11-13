@@ -28,17 +28,9 @@ abstract class AppDatabase : RoomDatabase() {
                 )
                     .fallbackToDestructiveMigration()
                     .allowMainThreadQueries()
-                    //.addCallback(roomCallback)
                     .build()
             }
             return instance
-        }
-
-        private val roomCallback: Callback = object : Callback() {
-            override fun onCreate(db: SupportSQLiteDatabase) {
-                super.onCreate(db)
-                instance.memoryDao().insert(Memory(0, "Memory 1", "24.12.2023", 0, 0))
-            }
         }
     }
 }

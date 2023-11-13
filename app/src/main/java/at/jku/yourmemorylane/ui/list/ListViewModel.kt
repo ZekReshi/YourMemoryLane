@@ -9,6 +9,7 @@ import at.jku.yourmemorylane.db.entities.Memory
 
 
 class ListViewModel(application: Application) : AndroidViewModel(application) {
+
     private val memoryDao: MemoryDao
     private val memories: LiveData<List<Memory>>
 
@@ -18,9 +19,6 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         memoryDao = AppDatabase.getInstance(application).memoryDao()
-        for (i in 1..10) {
-            memoryDao.insert(Memory(0, "Memory $i", "24.12.2023", 0, 0))
-        }
         memories = memoryDao.getAll()
     }
 
