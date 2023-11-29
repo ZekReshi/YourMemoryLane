@@ -62,6 +62,7 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.4.0-alpha02")
     implementation("androidx.camera:camera-camera2:1.4.0-alpha02")
     implementation("androidx.camera:camera-video:1.4.0-alpha02")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

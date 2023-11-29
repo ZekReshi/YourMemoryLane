@@ -11,10 +11,12 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
 import at.jku.yourmemorylane.databinding.ActivityEditBinding
 import at.jku.yourmemorylane.db.entities.Media
 import at.jku.yourmemorylane.ui.list.ListViewModel
+import com.bumptech.glide.Glide
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.time.LocalDate
@@ -49,6 +51,9 @@ class EditActivity : AppCompatActivity() {
                 it.forEach {
                     Log.d("EditActivity", "${it.id}, ${it.memoryId}, ${it.path}")
                 }
+                if (it.isNotEmpty()) {
+                    Glide.with(applicationContext).load(it[0].path.toUri()).into(binding.imageView)
+                }
             }
 
             binding.editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE))
@@ -72,7 +77,7 @@ class EditActivity : AppCompatActivity() {
                 if (uris.isNotEmpty()) {
                     Log.d("EditActivity", "Selected URIs: $uris")
                     uris.forEach {
-                        val media = Media(0, memoryId, "image", it.path!!)
+                        val media = Media(0, memoryId, "image", it.toString())
                         editViewModel.insert(media)
                     }
                 } else {
