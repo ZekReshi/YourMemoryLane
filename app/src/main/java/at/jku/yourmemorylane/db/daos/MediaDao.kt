@@ -1,5 +1,6 @@
 package at.jku.yourmemorylane.db.daos
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -12,11 +13,14 @@ interface MediaDao {
     fun getAll(): List<Media>
 
     @Query("select * from media where memoryId = :memoryId")
-    fun getAllByMemoryId(memoryId: Int): List<Media>
+    fun getAllByMemoryId(memoryId: Int): LiveData<List<Media>>
 
     @Insert
     fun insert(media: Media)
 
     @Delete
     fun delete(media: Media)
+
+    @Delete
+    fun deleteAll(media: List<Media>)
 }
