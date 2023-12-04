@@ -1,4 +1,4 @@
-package at.jku.yourmemorylane.ui
+package at.jku.yourmemorylane.activities
 
 import android.Manifest
 import android.content.ContentValues
@@ -11,21 +11,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import at.jku.yourmemorylane.R
 import at.jku.yourmemorylane.databinding.ActivityRecorderBinding
-import at.jku.yourmemorylane.databinding.FragmentFriendsBinding
 import at.jku.yourmemorylane.ui.friends.FriendsViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File

@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -48,9 +47,9 @@ class CameraActivity : AppCompatActivity() {
     }
     private lateinit var cameraProvider: ProcessCameraProvider
     private lateinit var useCaseGroup: UseCaseGroup
-    private val DOUBLE_CLICK_TIME_DELTA: Long =300L;
+    private val DOUBLE_CLICK_TIME_DELTA: Long =300L
     private var lastClickTime: Long = System.currentTimeMillis()
-    private var cameraMode: CameraMode = CameraMode.Picture;
+    private var cameraMode : CameraMode = CameraMode.Picture
 
 
     private lateinit var binding: ActivityCameraBinding
@@ -137,9 +136,7 @@ class CameraActivity : AppCompatActivity() {
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/YourMemoryLane")
-            }
+            put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/YourMemoryLane")
         }
         val mediaStoreOutputOptions = MediaStoreOutputOptions
             .Builder(contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
@@ -189,9 +186,7 @@ class CameraActivity : AppCompatActivity() {
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/YourMemoryLane")
-            }
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/YourMemoryLane")
         }
         val metadata = ImageCapture.Metadata()
         metadata.isReversedHorizontal = cameraOrientation == CameraSelector.LENS_FACING_FRONT
