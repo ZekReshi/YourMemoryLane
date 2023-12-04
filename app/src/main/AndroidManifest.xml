@@ -24,7 +24,7 @@
         android:theme="@style/Theme.YourMemoryLane"
         tools:targetApi="31">
         <activity
-            android:name=".ui.RecorderActivity"
+            android:name=".activities.RecorderActivity"
             android:exported="false"
             android:label="@string/title_activity_recorder"
             android:theme="@style/Theme.YourMemoryLane" />
