@@ -13,6 +13,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import at.jku.yourmemorylane.adapters.MediaAdapter
 import at.jku.yourmemorylane.databinding.ActivityEditBinding
 import at.jku.yourmemorylane.db.entities.Media
 import at.jku.yourmemorylane.ui.list.ListViewModel
@@ -36,6 +38,12 @@ class EditActivity : AppCompatActivity() {
         binding = ActivityEditBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val recyclerView = binding.mediaRecyclerView
+        recyclerView.layoutManager = GridLayoutManager(this, 2)
+
+        val mediaAdapter = MediaAdapter()
+        recyclerView.adapter = mediaAdapter
+
         binding.fabSave.setOnClickListener { saveMemory() }
 
         var day: Int
@@ -51,9 +59,7 @@ class EditActivity : AppCompatActivity() {
                 it.forEach {
                     Log.d("EditActivity", "${it.id}, ${it.memoryId}, ${it.path}")
                 }
-                if (it.isNotEmpty()) {
-                    Glide.with(applicationContext).load(it[0].path.toUri()).into(binding.imageView)
-                }
+                mediaAdapter.submitList(it)
             }
 
             binding.editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE))

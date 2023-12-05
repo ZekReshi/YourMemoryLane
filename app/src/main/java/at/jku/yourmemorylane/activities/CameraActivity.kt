@@ -47,16 +47,16 @@ class CameraActivity : AppCompatActivity() {
     }
     private lateinit var cameraProvider: ProcessCameraProvider
     private lateinit var useCaseGroup: UseCaseGroup
-    private val DOUBLE_CLICK_TIME_DELTA: Long =300L
+    private val DOUBLE_CLICK_TIME_DELTA: Long = 300L
     private var lastClickTime: Long = System.currentTimeMillis()
-    private var cameraMode : CameraMode = CameraMode.Picture
+    private var cameraMode: CameraMode = CameraMode.Picture
 
 
     private lateinit var binding: ActivityCameraBinding
     private var cameraOrientation = CameraSelector.LENS_FACING_BACK;
     // This property is only valid between onCreateView and
     // onDestroyView.
-    private lateinit var previewView : PreviewView;
+    private lateinit var previewView: PreviewView;
     private lateinit var flipButton: FloatingActionButton;
     private lateinit var cameraActionButton: FloatingActionButton;
     private lateinit var imageCapture: ImageCapture;
