@@ -22,7 +22,7 @@ class MediaAdapter:
 
     override fun onBindViewHolder(holder: MediaHolder, position: Int) {
         val media: Media = getItem(position)
-        Glide.with(holder.imageView.context)
+        Glide.with(holder.itemView.context)
             .load(media.path.toUri())
             .into(holder.imageView)
 

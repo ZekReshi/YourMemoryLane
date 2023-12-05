@@ -6,8 +6,9 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Media(
-    @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "memoryId") val memoryId: Int,
     @ColumnInfo(name = "type") val type: String,
     @ColumnInfo(name = "path") val path: String
-)
+){
+    @PrimaryKey(autoGenerate = true) var id: Int =0
+}

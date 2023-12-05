@@ -7,9 +7,10 @@ import java.sql.Date
 
 @Entity
 data class Memory(
-    @PrimaryKey(autoGenerate = true) val id: Int,
-    @ColumnInfo(name = "title") val title: String,
-    @ColumnInfo(name = "date") val date: String,
-    @ColumnInfo(name = "longitude") val longitude: Int,
-    @ColumnInfo(name = "latitude") val latitude: Int
-)
+    @ColumnInfo(name = "title") var title: String,
+    @ColumnInfo(name = "date") var date: String,
+    @ColumnInfo(name = "longitude") var longitude: Int,
+    @ColumnInfo(name = "latitude") var latitude: Int
+){
+    @PrimaryKey(autoGenerate = true) var id: Int =0
+}

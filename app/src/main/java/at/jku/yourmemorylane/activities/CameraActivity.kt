@@ -31,8 +31,10 @@ import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import at.jku.yourmemorylane.R
 import at.jku.yourmemorylane.databinding.ActivityCameraBinding
+import at.jku.yourmemorylane.db.entities.Media
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.common.util.concurrent.ListenableFuture
 import java.text.SimpleDateFormat
@@ -45,6 +47,9 @@ class CameraActivity : AppCompatActivity() {
         Picture,
         Video
     }
+
+    private lateinit var viewModel: CameraViewModel
+    private var memoryId: Int = -1
     private lateinit var cameraProvider: ProcessCameraProvider
     private lateinit var useCaseGroup: UseCaseGroup
     private val DOUBLE_CLICK_TIME_DELTA: Long = 300L
@@ -67,8 +72,12 @@ class CameraActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        memoryId=intent.getIntExtra("memoryId",-1)
+        viewModel = ViewModelProvider(this)[CameraViewModel::class.java]
+
         binding = ActivityCameraBinding.inflate(layoutInflater)
-        setCameraProviderListener();
+        setContentView(binding.root)
+        setCameraProviderListener()
         val root: View = binding.root
         previewView = binding.previewView
         previewView.setOnClickListener {
@@ -138,6 +147,8 @@ class CameraActivity : AppCompatActivity() {
             put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
             put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/YourMemoryLane")
         }
+        viewModel.insert(Media(memoryId=memoryId,"video/mp4", "file:///storage/emulated/0/Movies/YourMemoryLane/$name.mp4"))
+
         val mediaStoreOutputOptions = MediaStoreOutputOptions
             .Builder(contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
             .setContentValues(contentValues)
@@ -181,13 +192,14 @@ class CameraActivity : AppCompatActivity() {
 
     private fun takePicture() {
         val imageCapture = imageCapture ?: return
-        val name = SimpleDateFormat("dd_MM_yyyy_hh_mmm", Locale.GERMANY)
+        val name = SimpleDateFormat("dd_MM_yyyy_HH_mm", Locale.GERMANY)
             .format(System.currentTimeMillis())
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
             put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/YourMemoryLane")
         }
+
         val metadata = ImageCapture.Metadata()
         metadata.isReversedHorizontal = cameraOrientation == CameraSelector.LENS_FACING_FRONT
 
@@ -197,7 +209,7 @@ class CameraActivity : AppCompatActivity() {
                 contentValues)
             .setMetadata(metadata)
             .build()
-
+        viewModel.insert(Media(memoryId=memoryId,"image/jpeg", "file:///storage/emulated/0/Pictures/YourMemoryLane/$name.jpg"))
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(this),

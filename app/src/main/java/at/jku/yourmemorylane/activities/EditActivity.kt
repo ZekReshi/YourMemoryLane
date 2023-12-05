@@ -2,9 +2,6 @@ package at.jku.yourmemorylane.activities
 
 import android.app.DatePickerDialog
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -17,13 +14,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import at.jku.yourmemorylane.adapters.MediaAdapter
 import at.jku.yourmemorylane.databinding.ActivityEditBinding
 import at.jku.yourmemorylane.db.entities.Media
-import at.jku.yourmemorylane.ui.list.ListViewModel
 import com.bumptech.glide.Glide
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.time.LocalDate
 import java.util.Calendar
-import kotlin.math.floor
 
 
 class EditActivity : AppCompatActivity() {
@@ -45,7 +37,6 @@ class EditActivity : AppCompatActivity() {
         recyclerView.adapter = mediaAdapter
 
         binding.fabSave.setOnClickListener { saveMemory() }
-
         var day: Int
         var month: Int
         var year: Int
@@ -53,11 +44,13 @@ class EditActivity : AppCompatActivity() {
             title = "Edit Memory"
 
             val memoryId = intent.getIntExtra(EXTRA_ID, -1)
+            binding.recordAudioButton.setOnClickListener{ startRecorder(memoryId) }
+            binding.takePictureButton.setOnClickListener{ startCamera(memoryId)}
             editViewModel.initMedia(memoryId)
             editViewModel.getMedia().observe(this) {
                 Log.d("EditActivity", "Media loaded: ${it.size}")
                 it.forEach {
-                    Log.d("EditActivity", "${it.id}, ${it.memoryId}, ${it.path}")
+                    Log.d("EditActivity", "${it.id}, ${it.memoryId}, ${it.path.toUri()}")
                 }
                 mediaAdapter.submitList(it)
             }
@@ -83,7 +76,7 @@ class EditActivity : AppCompatActivity() {
                 if (uris.isNotEmpty()) {
                     Log.d("EditActivity", "Selected URIs: $uris")
                     uris.forEach {
-                        val media = Media(0, memoryId, "image", it.toString())
+                        val media = Media( memoryId, "image", it.toString())
                         editViewModel.insert(media)
                     }
                 } else {
@@ -122,6 +115,20 @@ class EditActivity : AppCompatActivity() {
 
             datePickerDialog.show()
         }
+    }
+
+    private fun startRecorder(memoryId: Int) {
+        val myIntent = Intent(this, RecorderActivity::class.java)
+        myIntent.putExtra("memoryId", memoryId) //Optional parameters
+
+        startActivity(myIntent)
+    }
+
+    private fun startCamera(memoryId: Int) {
+        val myIntent = Intent(this, CameraActivity::class.java)
+        myIntent.putExtra("memoryId", memoryId) //Optional parameters
+
+        startActivity(myIntent)
     }
 
     private fun saveMemory() {

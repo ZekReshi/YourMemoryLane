@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import at.jku.yourmemorylane.R
 import at.jku.yourmemorylane.databinding.ActivityRecorderBinding
+import at.jku.yourmemorylane.db.entities.Media
 import at.jku.yourmemorylane.ui.friends.FriendsViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
@@ -26,6 +27,8 @@ import java.util.Locale
 
 class RecorderActivity : AppCompatActivity() {
 
+    private lateinit var viewModel: RecorderViewModel
+    private var memoryId: Int =-1
     private lateinit var lastRecorded: String
     private var fileName:String? = null
     private var recordingIsPaused: Boolean = false
@@ -46,10 +49,10 @@ class RecorderActivity : AppCompatActivity() {
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
-        val friendsViewModel =
-            ViewModelProvider(this).get(FriendsViewModel::class.java)
-
         _binding = ActivityRecorderBinding.inflate(layoutInflater)
+        memoryId=intent.getIntExtra("memoryId",-1)
+        viewModel = ViewModelProvider(this)[RecorderViewModel::class.java]
+        setContentView(binding.root)
         val root: View = binding.root
 
         timerDisplay = binding.timerDisplay
@@ -126,6 +129,7 @@ class RecorderActivity : AppCompatActivity() {
             mediaRecorder!!.stop();
             mediaRecorder!!.reset();
             mediaRecorder!!.release();
+            viewModel.insert(Media(memoryId=memoryId,"audio/m4a", "file://$fileName"))
             lastRecorded = fileName!!
             mediaRecorder = null;
 

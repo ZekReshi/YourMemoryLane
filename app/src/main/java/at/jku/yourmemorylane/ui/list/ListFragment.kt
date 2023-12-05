@@ -48,12 +48,12 @@ class ListFragment : Fragment() {
             if (id > 0) {
                 val title = intent.getStringExtra(EXTRA_TITLE)!!
                 val date = intent.getStringExtra(EXTRA_DATE)!!
-                val memory = Memory(id, title, date, 0, 0)
+                val memory = Memory(title, date, 0, 0)
                 listViewModel.update(memory)
             } else {
                 val title = intent.getStringExtra(EXTRA_TITLE)!!
                 val date = intent.getStringExtra(EXTRA_DATE)!!
-                val memory = Memory(-1, title, date, 0, 0)
+                val memory = Memory(title, date, 0, 0)
                 listViewModel.insert(memory)
             }
         }
