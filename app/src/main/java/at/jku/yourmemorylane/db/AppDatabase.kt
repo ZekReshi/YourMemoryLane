@@ -12,7 +12,7 @@ import at.jku.yourmemorylane.db.entities.Memory
 import kotlinx.coroutines.coroutineScope
 
 
-@Database(entities = [Memory::class, Media::class], version = 2)
+@Database(entities = [Memory::class, Media::class], version = 3)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun memoryDao(): MemoryDao
     abstract fun mediaDao(): MediaDao

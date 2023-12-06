@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.asLiveData
 import at.jku.yourmemorylane.db.AppDatabase
 import at.jku.yourmemorylane.db.daos.MediaDao
 import at.jku.yourmemorylane.db.entities.Media
