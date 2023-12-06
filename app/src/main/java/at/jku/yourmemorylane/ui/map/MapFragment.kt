@@ -70,13 +70,13 @@ class MapFragment : Fragment(), OnMapReadyCallback{
             position(LatLng(it.latitude, it.longitude)).
             title(it.title)
 
-            mapViewModel.getMediaByMemoryId(it.id).observe(viewLifecycleOwner) {
-                medias ->
-                if(medias != null && medias.size >0)
+            mapViewModel.getImagesByMemoryId(it.id).observe(viewLifecycleOwner) {
+                images ->
+                if(images != null && images.size >0)
                 {
-                    val length = medias.size
+                    val length = images.size
                     val randIndex = Random.nextInt(0,length)
-                    val media = medias[randIndex]
+                    val media = images[randIndex]
                     val inputStream: InputStream? = activity?.contentResolver?.openInputStream(media.path.toUri())
                     val drawable = Drawable.createFromStream(inputStream, media.path)
 
