@@ -10,8 +10,10 @@ import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.os.SystemClock
 import android.util.Log
 import android.view.View
+import android.widget.Chronometer
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -34,11 +36,11 @@ class RecorderActivity : AppCompatActivity() {
     private var recordingIsPaused: Boolean = false
     private var mediaRecorder: MediaRecorder? = null;
     private lateinit var mediaPlayer: MediaPlayer;
-
+    private var recordingStopped:Long =0;
     private lateinit var pauseButton: FloatingActionButton
     private lateinit var playButton: FloatingActionButton
     private lateinit var recordButton: FloatingActionButton
-    private lateinit var timerDisplay: TextView
+    private lateinit var timerDisplay: Chronometer
     private var _binding: ActivityRecorderBinding? = null
 
     // This property is only valid between onCreateView and
@@ -56,9 +58,6 @@ class RecorderActivity : AppCompatActivity() {
         val root: View = binding.root
 
         timerDisplay = binding.timerDisplay
-        /*friendsViewModel.text.observe(viewLifecycleOwner) {
-            timerDisplay.text = it
-        }*/
         recordButton = binding.recordButton;
         playButton = binding.playButton
         pauseButton = binding.pauseButton
@@ -112,10 +111,14 @@ class RecorderActivity : AppCompatActivity() {
             recordingIsPaused = if(recordingIsPaused){
                 pauseButton.setImageResource(R.drawable.baseline_pause_24)
                 mediaRecorder!!.resume()
+                timerDisplay.base =SystemClock.elapsedRealtime() + recordingStopped;
+                timerDisplay.start()
                 false;
             } else {
                 pauseButton.setImageResource(R.drawable.baseline_play_arrow)
                 mediaRecorder!!.pause()
+                recordingStopped = timerDisplay.base -SystemClock.elapsedRealtime()
+                timerDisplay.stop()
                 true;
             }
 
@@ -124,8 +127,6 @@ class RecorderActivity : AppCompatActivity() {
 
     private fun recordAudio() {
         if(mediaRecorder != null){
-            Log.i(ContentValues.TAG,"ending recording")
-
             mediaRecorder!!.stop();
             mediaRecorder!!.reset();
             mediaRecorder!!.release();
@@ -133,12 +134,17 @@ class RecorderActivity : AppCompatActivity() {
             lastRecorded = fileName!!
             mediaRecorder = null;
 
+            timerDisplay.stop()
+
             recordButton.setImageResource(R.drawable.baseline_mic_)
             pauseButton.setImageResource(R.drawable.baseline_pause_24)
             playButton.isEnabled =true
             pauseButton.isEnabled =false
         }
         else {
+            timerDisplay.base = SystemClock.elapsedRealtime()
+            recordingStopped = 0
+            timerDisplay.start()
             playButton.isEnabled=false
             pauseButton.isEnabled=true
             pauseButton.setImageResource(R.drawable.baseline_pause_24)

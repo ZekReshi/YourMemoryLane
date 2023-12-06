@@ -6,9 +6,12 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.SystemClock
 import android.provider.MediaStore
 import android.util.Log
+import android.view.Display
 import android.view.View
+import android.widget.Chronometer
 import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
@@ -31,6 +34,7 @@ import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import at.jku.yourmemorylane.R
 import at.jku.yourmemorylane.databinding.ActivityCameraBinding
@@ -67,6 +71,8 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var imageCapture: ImageCapture;
     private lateinit var cameraModeButton: FloatingActionButton;
     private lateinit var videoCapture: VideoCapture<Recorder>;
+    private lateinit var timerDisplay: Chronometer
+    private var recordingStopped:Long =0
     private var recording: Recording? = null
 
 
@@ -79,41 +85,37 @@ class CameraActivity : AppCompatActivity() {
         setContentView(binding.root)
         setCameraProviderListener()
         val root: View = binding.root
+        timerDisplay = binding.timerDisplay
+        timerDisplay.isVisible = false
         previewView = binding.previewView
         previewView.setOnClickListener {
             val clickTime = System.currentTimeMillis()
             if (clickTime - lastClickTime < DOUBLE_CLICK_TIME_DELTA) {
-                cameraOrientation = 1-cameraOrientation;
-                setCameraProviderListener()
+                switchCamera()
             }
             lastClickTime = clickTime
         }
         flipButton=binding.flip
         flipButton.setOnClickListener {
-            cameraOrientation = 1-cameraOrientation
-
-            val cameraSelector =
-                CameraSelector.Builder().requireLensFacing(cameraOrientation).build()
-            if(recording != null)
-                recording?.pause();
-            cameraProvider.unbindAll()
-            val camera: Camera = cameraProvider.bindToLifecycle(this, cameraSelector, useCaseGroup)
-            if(recording != null){
-                recording?.resume()
-            }
+            switchCamera()
         }
         cameraActionButton=binding.cameraAction
         cameraActionButton.setOnClickListener {
-            if(cameraMode == CameraMode.Picture)
+            if(cameraMode == CameraMode.Picture){
                 takePicture()
-            else
+
+            }
+            else{
                 startVideo()
+            }
         }
         cameraModeButton=binding.cameraMode
         cameraModeButton.setOnClickListener {
             cameraMode = if(cameraMode== CameraMode.Picture){
+                timerDisplay.isVisible = true
                 CameraMode.Video
             } else{
+                timerDisplay.isVisible = false
                 CameraMode.Picture
             }
             if(cameraMode == CameraMode.Picture){
@@ -129,17 +131,34 @@ class CameraActivity : AppCompatActivity() {
         }
     }
 
+    private fun switchCamera() {
+        cameraOrientation = 1 - cameraOrientation
+
+        val cameraSelector =
+            CameraSelector.Builder().requireLensFacing(cameraOrientation).build()
+        if (recording != null)
+            recording?.pause();
+        cameraProvider.unbindAll()
+        val camera: Camera = cameraProvider.bindToLifecycle(this, cameraSelector, useCaseGroup)
+        if (recording != null) {
+            recording?.resume()
+        }
+    }
+
     @OptIn(ExperimentalPersistentRecording::class) @SuppressLint("MissingPermission")
     private fun startVideo() {
         val videoCapture = this.videoCapture ?: return
 
         val curRecording = recording
         if (curRecording != null) {
+            timerDisplay.stop()
             curRecording.stop()
             recording = null
             return
         }
-
+        timerDisplay.base = SystemClock.elapsedRealtime()
+        recordingStopped = 0
+        timerDisplay.start()
         val name = SimpleDateFormat("dd_MM_yyyy_hh_mmm", Locale.GERMANY)
             .format(System.currentTimeMillis())
         val contentValues = ContentValues().apply {
