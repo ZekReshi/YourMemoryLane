@@ -11,11 +11,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="AMOGUS" />
-
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
@@ -23,8 +18,9 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edit_text_date"
-            app:srcCompat="@drawable/baseline_camera" />
+            app:layout_constraintTop_toBottomOf="parent"
+            app:srcCompat="@drawable/baseline_camera"
+            android:adjustViewBounds="true" />
 
     </LinearLayout>
 

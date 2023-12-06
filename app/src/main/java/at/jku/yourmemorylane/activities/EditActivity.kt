@@ -10,11 +10,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import at.jku.yourmemorylane.adapters.MediaAdapter
 import at.jku.yourmemorylane.databinding.ActivityEditBinding
 import at.jku.yourmemorylane.db.entities.Media
-import com.bumptech.glide.Glide
 import java.util.Calendar
 
 
@@ -31,7 +30,7 @@ class EditActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val recyclerView = binding.mediaRecyclerView
-        recyclerView.layoutManager = GridLayoutManager(this, 2)
+        recyclerView.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
         val mediaAdapter = MediaAdapter()
         recyclerView.adapter = mediaAdapter
