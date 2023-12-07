@@ -30,7 +30,7 @@ import java.util.Locale
 class RecorderActivity : AppCompatActivity() {
 
     private lateinit var viewModel: RecorderViewModel
-    private var memoryId: Int =-1
+    private var memoryId: Long =-1
     private lateinit var lastRecorded: String
     private var fileName:String? = null
     private var recordingIsPaused: Boolean = false
@@ -52,7 +52,7 @@ class RecorderActivity : AppCompatActivity() {
     ) {
         super.onCreate(savedInstanceState)
         _binding = ActivityRecorderBinding.inflate(layoutInflater)
-        memoryId=intent.getIntExtra("memoryId",-1)
+        memoryId = intent.getLongExtra("memoryId",-1)
         viewModel = ViewModelProvider(this)[RecorderViewModel::class.java]
         setContentView(binding.root)
         val root: View = binding.root

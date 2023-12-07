@@ -19,6 +19,8 @@ import at.jku.yourmemorylane.R
 import at.jku.yourmemorylane.activities.EditActivity
 import at.jku.yourmemorylane.activities.EditActivity.Companion.EXTRA_DATE
 import at.jku.yourmemorylane.activities.EditActivity.Companion.EXTRA_ID
+import at.jku.yourmemorylane.activities.EditActivity.Companion.EXTRA_LATITUDE
+import at.jku.yourmemorylane.activities.EditActivity.Companion.EXTRA_LONGITUDE
 import at.jku.yourmemorylane.activities.EditActivity.Companion.EXTRA_TITLE
 import at.jku.yourmemorylane.adapters.MemoryAdapter
 import at.jku.yourmemorylane.databinding.FragmentListBinding
@@ -39,24 +41,7 @@ class ListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        editActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode != Activity.RESULT_OK) {
-                return@registerForActivityResult
-            }
-            val intent = result.data!!
-            val id = intent.getIntExtra(EXTRA_ID, -1)
-            if (id > 0) {
-                val title = intent.getStringExtra(EXTRA_TITLE)!!
-                val date = intent.getStringExtra(EXTRA_DATE)!!
-                val memory = Memory(title, date, 0.0, 0.0)
-                listViewModel.update(memory)
-            } else {
-                val title = intent.getStringExtra(EXTRA_TITLE)!!
-                val date = intent.getStringExtra(EXTRA_DATE)!!
-                val memory = Memory(title, date, 0.0, 0.0)
-                listViewModel.insert(memory)
-            }
-        }
+        editActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
     }
 
     override fun onCreateView(
@@ -86,6 +71,8 @@ class ListFragment : Fragment() {
                 intent.putExtra(EXTRA_ID, memory.id)
                 intent.putExtra(EXTRA_TITLE, memory.title)
                 intent.putExtra(EXTRA_DATE, memory.date)
+                intent.putExtra(EXTRA_LONGITUDE, memory.longitude)
+                intent.putExtra(EXTRA_LATITUDE, memory.latitude)
 
                 editActivityLauncher.launch(intent)
             }

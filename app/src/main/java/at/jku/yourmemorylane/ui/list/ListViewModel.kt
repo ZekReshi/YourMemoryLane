@@ -26,12 +26,4 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
         memoryDao.insert(memory)
     }
 
-    fun update(memory: Memory) {
-        memoryDao.update(memory)
-    }
-
-    fun delete(memory: Memory) {
-        memoryDao.delete(memory)
-    }
-
 }

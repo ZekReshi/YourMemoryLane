@@ -12,5 +12,5 @@ data class Memory(
     @ColumnInfo(name = "longitude") var longitude: Double,
     @ColumnInfo(name = "latitude") var latitude: Double
 ){
-    @PrimaryKey(autoGenerate = true) var id: Int =0
+    @PrimaryKey(autoGenerate = true) var id: Long = 0
 }

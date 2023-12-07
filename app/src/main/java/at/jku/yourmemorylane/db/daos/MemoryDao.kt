@@ -14,17 +14,17 @@ interface MemoryDao {
     fun getAll(): LiveData<List<Memory>>
 
     @Query("select * from memory where id = :id")
-    fun getById(id: Int): LiveData<Memory>
+    fun getById(id: Long): LiveData<Memory>
 
     @Query("select * from memory where title like :title")
     fun getAllByTitle(title: String): LiveData<List<Memory>>
 
     @Insert
-    fun insert(memory: Memory)
+    fun insert(memory: Memory): Long
 
     @Update
-    fun update(memory: Memory)
+    fun update(memory: Memory): Int
 
     @Delete
-    fun delete(memory: Memory)
+    fun delete(memory: Memory): Int
 }

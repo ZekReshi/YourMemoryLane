@@ -53,7 +53,7 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private lateinit var viewModel: CameraViewModel
-    private var memoryId: Int = -1
+    private var memoryId: Long = -1
     private lateinit var cameraProvider: ProcessCameraProvider
     private lateinit var useCaseGroup: UseCaseGroup
     private val DOUBLE_CLICK_TIME_DELTA: Long = 300L
@@ -78,7 +78,7 @@ class CameraActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        memoryId=intent.getIntExtra("memoryId",-1)
+        memoryId = intent.getLongExtra("memoryId",-1)
         viewModel = ViewModelProvider(this)[CameraViewModel::class.java]
 
         binding = ActivityCameraBinding.inflate(layoutInflater)
