@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.provider.MediaStore
 import android.util.Log
-import android.view.Display
 import android.view.View
 import android.widget.Chronometer
 import android.widget.Toast
@@ -39,6 +38,7 @@ import androidx.lifecycle.ViewModelProvider
 import at.jku.yourmemorylane.R
 import at.jku.yourmemorylane.databinding.ActivityCameraBinding
 import at.jku.yourmemorylane.db.entities.Media
+import at.jku.yourmemorylane.viewmodels.CameraViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.common.util.concurrent.ListenableFuture
 import java.text.SimpleDateFormat

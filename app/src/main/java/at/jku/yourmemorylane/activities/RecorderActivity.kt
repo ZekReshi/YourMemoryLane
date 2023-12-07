@@ -14,14 +14,13 @@ import android.os.SystemClock
 import android.util.Log
 import android.view.View
 import android.widget.Chronometer
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import at.jku.yourmemorylane.R
 import at.jku.yourmemorylane.databinding.ActivityRecorderBinding
 import at.jku.yourmemorylane.db.entities.Media
-import at.jku.yourmemorylane.ui.friends.FriendsViewModel
+import at.jku.yourmemorylane.viewmodels.RecorderViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
 import java.text.SimpleDateFormat

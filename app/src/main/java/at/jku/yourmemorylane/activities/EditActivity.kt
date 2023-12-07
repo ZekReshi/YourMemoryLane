@@ -15,6 +15,7 @@ import at.jku.yourmemorylane.adapters.MediaAdapter
 import at.jku.yourmemorylane.databinding.ActivityEditBinding
 import at.jku.yourmemorylane.db.entities.Media
 import at.jku.yourmemorylane.db.entities.Memory
+import at.jku.yourmemorylane.viewmodels.EditViewModel
 import java.util.Calendar
 
 

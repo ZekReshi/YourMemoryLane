@@ -1,4 +1,4 @@
-package at.jku.yourmemorylane.ui.map
+package at.jku.yourmemorylane.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -23,6 +23,7 @@ import at.jku.yourmemorylane.R
 import at.jku.yourmemorylane.activities.EditActivity
 import at.jku.yourmemorylane.databinding.FragmentMapBinding
 import at.jku.yourmemorylane.db.AppDatabase
+import at.jku.yourmemorylane.viewmodels.MapViewModel
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment

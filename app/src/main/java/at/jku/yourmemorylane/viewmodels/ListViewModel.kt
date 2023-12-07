@@ -1,4 +1,4 @@
-package at.jku.yourmemorylane.ui.list
+package at.jku.yourmemorylane.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

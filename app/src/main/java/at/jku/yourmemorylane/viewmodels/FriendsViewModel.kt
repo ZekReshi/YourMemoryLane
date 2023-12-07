@@ -1,4 +1,4 @@
-package at.jku.yourmemorylane.ui.friends
+package at.jku.yourmemorylane.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
