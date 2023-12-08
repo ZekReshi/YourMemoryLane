@@ -13,7 +13,7 @@
         android:layout_marginBottom="8dp"
         android:clickable="true"
         android:src="@drawable/baseline_folder_open_24"
-        app:layout_constraintBottom_toTopOf="@+id/fab_save"
+        app:layout_constraintBottom_toTopOf="@+id/fab_dont_add_media"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
