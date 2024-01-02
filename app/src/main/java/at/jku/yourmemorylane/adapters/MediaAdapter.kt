@@ -3,28 +3,56 @@ package at.jku.yourmemorylane.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.VideoView
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import at.jku.yourmemorylane.databinding.MediaItemBinding
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import at.jku.yourmemorylane.databinding.ImageItemBinding
+import at.jku.yourmemorylane.databinding.VideoItemBinding
 import at.jku.yourmemorylane.db.entities.Media
+import at.jku.yourmemorylane.db.entities.Type
 import com.bumptech.glide.Glide
 
 class MediaAdapter:
-    ListAdapter<Media, MediaAdapter.MediaHolder>(DIFF_CALLBACK) {
+    ListAdapter<Media, ViewHolder>(DIFF_CALLBACK) {
     private lateinit var onClickListener: OnItemClickListener
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaHolder {
-        val binding = MediaItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MediaHolder(binding)
+    override fun getItemViewType(position: Int): Int {
+        return currentList[position].type.value
     }
 
-    override fun onBindViewHolder(holder: MediaHolder, position: Int) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        when (viewType) {
+            Type.IMAGE.value -> {
+                val binding = ImageItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                return ImageHolder(binding)
+            }
+            Type.VIDEO.value -> {
+                val binding = VideoItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                return VideoHolder(binding)
+            }
+        }
+        val binding = ImageItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ImageHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val media: Media = getItem(position)
-        Glide.with(holder.itemView.context)
-            .load(media.path.toUri())
-            .into(holder.imageView)
+        when (holder.itemViewType) {
+            Type.IMAGE.value -> {
+                val imageHolder = holder as ImageHolder
+                Glide.with(holder.itemView.context)
+                    .load(media.path.toUri())
+                    .into(imageHolder.imageView)
+            }
+            Type.VIDEO.value -> {
+                val videoHolder = holder as VideoHolder
+                videoHolder.videoView.setVideoURI(media.path.toUri())
+                videoHolder.videoView.start()
+            }
+        }
 
         with(holder.itemView) {
             tag = media
@@ -36,8 +64,12 @@ class MediaAdapter:
         }
     }
 
-    inner class MediaHolder(binding: MediaItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        var imageView: ImageView = binding.imageView
+    inner class ImageHolder(binding: ImageItemBinding) : ViewHolder(binding.root) {
+        var imageView: ImageView = binding.ivImageItem
+    }
+
+    inner class VideoHolder(binding: VideoItemBinding) : ViewHolder(binding.root) {
+        var videoView: VideoView = binding.vvVideoItem
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener) {

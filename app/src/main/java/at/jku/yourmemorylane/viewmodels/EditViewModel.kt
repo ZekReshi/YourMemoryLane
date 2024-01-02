@@ -25,7 +25,7 @@ class EditViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getMedia(): LiveData<List<Media>> {
-        return media;
+        return media
     }
 
     fun initMemory(mem: Memory) {

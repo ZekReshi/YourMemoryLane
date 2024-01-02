@@ -4,7 +4,9 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.webkit.MimeTypeMap
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -15,17 +17,21 @@ import at.jku.yourmemorylane.adapters.MediaAdapter
 import at.jku.yourmemorylane.databinding.ActivityEditBinding
 import at.jku.yourmemorylane.db.entities.Media
 import at.jku.yourmemorylane.db.entities.Memory
+import at.jku.yourmemorylane.db.entities.Type
 import at.jku.yourmemorylane.viewmodels.EditViewModel
 import java.util.Calendar
 
 
 class EditActivity : AppCompatActivity() {
+
+    private lateinit var mediaDetailActivityLauncher: ActivityResultLauncher<Intent>
     private lateinit var binding: ActivityEditBinding
     private lateinit var editViewModel: EditViewModel
-    private var addMedia = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        mediaDetailActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
 
         editViewModel = ViewModelProvider(this)[EditViewModel::class.java]
 
@@ -33,32 +39,45 @@ class EditActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val recyclerView = binding.mediaRecyclerView
-        recyclerView.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        val layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        recyclerView.layoutManager = layoutManager
 
         val mediaAdapter = MediaAdapter()
+        mediaAdapter.setOnItemClickListener(object : MediaAdapter.OnItemClickListener {
+            override fun onItemClick(media: Media) {
+                val intent = Intent(applicationContext, MediaDetailActivity::class.java)
+                intent.putExtra(MediaDetailActivity.EXTRA_ID, media.id)
+
+                mediaDetailActivityLauncher.launch(intent)
+            }
+        })
         recyclerView.adapter = mediaAdapter
 
-        binding.fabSave.setOnClickListener { saveMemory() }
-        binding.fabAddMedia.setOnClickListener {
-            addMedia = true
+        binding.fabEdit.setOnClickListener {
             binding.fabGallery.show()
             binding.fabRecordAudio.show()
             binding.fabTakePicture.show()
-            binding.fabDontAddMedia.show()
-            binding.fabAddMedia.hide()
+            binding.fabSave.show()
+            binding.fabEdit.hide()
+            binding.editTextTitle.isEnabled = true
+            binding.editTextDate.isEnabled = true
         }
-        binding.fabDontAddMedia.setOnClickListener {
-            addMedia = false
-            binding.fabAddMedia.show()
+        binding.fabSave.setOnClickListener {
             binding.fabGallery.hide()
             binding.fabRecordAudio.hide()
             binding.fabTakePicture.hide()
-            binding.fabDontAddMedia.hide()
+            binding.fabSave.hide()
+            binding.fabEdit.show()
+            binding.editTextTitle.isEnabled = false
+            binding.editTextDate.isEnabled = false
+            saveMemory()
         }
+        binding.fabSave.hide()
         binding.fabGallery.hide()
         binding.fabRecordAudio.hide()
         binding.fabTakePicture.hide()
-        binding.fabDontAddMedia.hide()
+        binding.editTextTitle.isEnabled = false
+        binding.editTextDate.isEnabled = false
 
         title = "Edit Memory"
 
@@ -79,7 +98,9 @@ class EditActivity : AppCompatActivity() {
             it.forEach {
                 Log.d("EditActivity", "${it.id}, ${it.memoryId}, ${it.path.toUri()}")
             }
-            mediaAdapter.submitList(it)
+            mediaAdapter.submitList(it) {
+                layoutManager.invalidateSpanAssignments()
+            }
         }
 
         binding.editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE))
@@ -106,8 +127,20 @@ class EditActivity : AppCompatActivity() {
             if (uris.isNotEmpty()) {
                 Log.d("EditActivity", "Selected URIs: $uris")
                 uris.forEach {
-                    val media = Media(memoryId, "image", it.toString())
-                    editViewModel.insert(media)
+                    val mimeType = contentResolver.getType(it)
+
+                    if (mimeType != null) {
+                        val type: Type
+                        if (mimeType.startsWith("image")) {
+                            type = Type.IMAGE
+                            val media = Media(memoryId, type, it.toString())
+                            editViewModel.insert(media)
+                        } else if (mimeType.startsWith("video")) {
+                            type = Type.VIDEO
+                            val media = Media(memoryId, type, it.toString())
+                            editViewModel.insert(media)
+                        }
+                    }
                 }
             } else {
                 Log.d("EditActivity", "No media selected")
@@ -163,8 +196,6 @@ class EditActivity : AppCompatActivity() {
         memory.date = date
 
         editViewModel.update(memory)
-
-        finish()
     }
 
     companion object {

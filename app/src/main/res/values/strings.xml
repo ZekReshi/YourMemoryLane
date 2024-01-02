@@ -6,4 +6,5 @@
     <string name="title_activity_camera">Camera</string>
     <string name="title_activity_edit">Edit</string>
     <string name="title_activity_recorder">Recorder</string>
+    <string name="title_activity_fullscreen_image">Image</string>
 </resources>

@@ -22,6 +22,9 @@ interface MediaDao {
     @Delete
     fun deleteAll(media: List<Media>): Int
 
+    @Query("select * from media where id = :mediaId")
+    fun getById(mediaId: Long): LiveData<Media>
+
     @Query("select * from media where memoryId = :memoryId")
     fun getAllByMemoryId(memoryId: Long): LiveData<List<Media>>
 

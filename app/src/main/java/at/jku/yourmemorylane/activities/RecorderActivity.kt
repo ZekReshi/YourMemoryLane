@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import at.jku.yourmemorylane.R
 import at.jku.yourmemorylane.databinding.ActivityRecorderBinding
 import at.jku.yourmemorylane.db.entities.Media
+import at.jku.yourmemorylane.db.entities.Type
 import at.jku.yourmemorylane.viewmodels.RecorderViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
@@ -129,7 +130,7 @@ class RecorderActivity : AppCompatActivity() {
             mediaRecorder!!.stop();
             mediaRecorder!!.reset();
             mediaRecorder!!.release();
-            viewModel.insert(Media(memoryId=memoryId,"audio/m4a", "file://$fileName"))
+            viewModel.insert(Media(memoryId=memoryId,Type.AUDIO, "file://$fileName"))
             lastRecorded = fileName!!
             mediaRecorder = null;
 

@@ -38,6 +38,7 @@ import androidx.lifecycle.ViewModelProvider
 import at.jku.yourmemorylane.R
 import at.jku.yourmemorylane.databinding.ActivityCameraBinding
 import at.jku.yourmemorylane.db.entities.Media
+import at.jku.yourmemorylane.db.entities.Type
 import at.jku.yourmemorylane.viewmodels.CameraViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.common.util.concurrent.ListenableFuture
@@ -166,7 +167,7 @@ class CameraActivity : AppCompatActivity() {
             put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
             put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/YourMemoryLane")
         }
-        viewModel.insert(Media(memoryId=memoryId,"video/mp4", "file:///storage/emulated/0/Movies/YourMemoryLane/$name.mp4"))
+        viewModel.insert(Media(memoryId=memoryId,Type.VIDEO, "file:///storage/emulated/0/Movies/YourMemoryLane/$name.mp4"))
 
         val mediaStoreOutputOptions = MediaStoreOutputOptions
             .Builder(contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
@@ -228,7 +229,7 @@ class CameraActivity : AppCompatActivity() {
                 contentValues)
             .setMetadata(metadata)
             .build()
-        viewModel.insert(Media(memoryId=memoryId,"image/jpeg", "file:///storage/emulated/0/Pictures/YourMemoryLane/$name.jpg"))
+        viewModel.insert(Media(memoryId=memoryId,Type.IMAGE, "file:///storage/emulated/0/Pictures/YourMemoryLane/$name.jpg"))
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(this),
