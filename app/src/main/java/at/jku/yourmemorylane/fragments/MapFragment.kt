@@ -93,10 +93,6 @@ class MapFragment : Fragment(), OnMapReadyCallback{
 
                 val intent = Intent(activity, EditActivity::class.java)
                 intent.putExtra(EditActivity.EXTRA_ID, memory.id)
-                intent.putExtra(EditActivity.EXTRA_TITLE, memory.title)
-                intent.putExtra(EditActivity.EXTRA_DATE, memory.date)
-                intent.putExtra(EditActivity.EXTRA_LONGITUDE, memory.longitude)
-                intent.putExtra(EditActivity.EXTRA_LATITUDE, memory.latitude)
 
                 editActivityLauncher.launch(intent)
             }

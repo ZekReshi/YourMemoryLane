@@ -9,7 +9,9 @@ import at.jku.yourmemorylane.db.daos.MemoryDao
 import at.jku.yourmemorylane.db.entities.Media
 import at.jku.yourmemorylane.db.entities.Memory
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Date
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -26,8 +28,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun insertMemory(long: Double, lat: Double): Memory {
-        val memory = Memory("New Memory", LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), long, lat)
-        memory.id = memoryDao.insert(Memory("New Memory", LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), long, lat))
+        val memory = Memory("New Memory", Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()), long, lat)
+        memory.id = memoryDao.insert(memory)
         return memory
     }
 

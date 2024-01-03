@@ -17,7 +17,7 @@ class EditViewModel(application: Application) : AndroidViewModel(application) {
     private val mediaDao: MediaDao
     private val memoryDao: MemoryDao
     private lateinit var media: LiveData<List<Media>>
-    private lateinit var memory: Memory
+    private lateinit var memory: LiveData<Memory>
 
     init {
         memoryDao = AppDatabase.getInstance(application).memoryDao()
@@ -28,12 +28,12 @@ class EditViewModel(application: Application) : AndroidViewModel(application) {
         return media
     }
 
-    fun initMemory(mem: Memory) {
-        memory = mem
-        media = mediaDao.getAllByMemoryId(mem.id)
+    fun initMemory(memoryId: Long) {
+        memory = memoryDao.getById(memoryId)
+        media = mediaDao.getAllByMemoryId(memoryId)
     }
 
-    fun getMemory(): Memory {
+    fun getMemory(): LiveData<Memory> {
         return memory
     }
 
@@ -45,8 +45,8 @@ class EditViewModel(application: Application) : AndroidViewModel(application) {
         memoryDao.delete(memory)
     }
 
-    fun insert(media: Media) {
-        mediaDao.insert(media)
+    fun insert(media: Media): Long {
+        return mediaDao.insert(media)
     }
 
     fun delete(media: List<Media>) {

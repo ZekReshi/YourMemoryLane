@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import at.jku.yourmemorylane.databinding.MemoryItemBinding
 import at.jku.yourmemorylane.db.entities.Memory
+import java.text.SimpleDateFormat
 
 class MemoryAdapter:
     ListAdapter<Memory, MemoryAdapter.MemoryHolder>(DIFF_CALLBACK) {
@@ -21,7 +22,8 @@ class MemoryAdapter:
 
     override fun onBindViewHolder(holder: MemoryHolder, position: Int) {
         val memory: Memory = getItem(position)
-        holder.textViewDate.text = memory.date
+        val dateFormat = SimpleDateFormat.getDateInstance()
+        holder.textViewDate.text = dateFormat.format(memory.date)
         holder.textViewTitle.text = memory.title
 
         with(holder.itemView) {

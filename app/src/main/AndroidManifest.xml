@@ -27,7 +27,8 @@
             android:name=".activities.MediaDetailActivity"
             android:exported="false"
             android:label="@string/title_activity_recorder"
-            android:theme="@style/Theme.YourMemoryLane" />
+            android:theme="@style/Theme.YourMemoryLane"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.RecorderActivity"
             android:exported="false"

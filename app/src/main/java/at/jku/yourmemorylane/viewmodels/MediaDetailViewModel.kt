@@ -30,11 +30,8 @@ class MediaDetailViewModel(application: Application) : AndroidViewModel(applicat
         mediaDao.delete(media.value!!)
     }
 
-    fun update(text: String) {
-        val oldMedia = media.value!!
-        val newMedia = Media(oldMedia.memoryId, Type.TEXT, text)
-        newMedia.id = oldMedia.id
-        mediaDao.update(newMedia)
+    fun update() {
+        mediaDao.update(media.value!!)
     }
 
 }

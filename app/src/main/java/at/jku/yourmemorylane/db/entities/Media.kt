@@ -8,9 +8,9 @@ import at.jku.yourmemorylane.db.Converters
 
 @Entity
 data class Media(
-    @ColumnInfo(name = "memoryId") val memoryId: Long,
-    @ColumnInfo(name = "type") @TypeConverters(Converters::class) val type: Type,
-    @ColumnInfo(name = "path") val path: String
+    @ColumnInfo(name = "memoryId") var memoryId: Long,
+    @ColumnInfo(name = "type") var type: Type,
+    @ColumnInfo(name = "path") var path: String
 ){
     @PrimaryKey(autoGenerate = true) var id: Long = 0
 }

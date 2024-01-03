@@ -4,7 +4,6 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
@@ -15,11 +14,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import at.jku.yourmemorylane.adapters.MediaAdapter
 import at.jku.yourmemorylane.databinding.ActivityEditBinding
+import at.jku.yourmemorylane.db.Converters
 import at.jku.yourmemorylane.db.entities.Media
 import at.jku.yourmemorylane.db.entities.Memory
 import at.jku.yourmemorylane.db.entities.Type
 import at.jku.yourmemorylane.viewmodels.EditViewModel
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.GregorianCalendar
 
 
 class EditActivity : AppCompatActivity() {
@@ -85,52 +88,27 @@ class EditActivity : AppCompatActivity() {
         title = "Edit Memory"
 
         val memoryId = intent.getLongExtra(EXTRA_ID, -1)
-        val title = intent.getStringExtra(EXTRA_TITLE)!!
-        val date = intent.getStringExtra(EXTRA_DATE)!!
-        val longitude = intent.getDoubleExtra(EXTRA_LONGITUDE, .0)
-        val latitude = intent.getDoubleExtra(EXTRA_LATITUDE, .0)
+        editViewModel.initMemory(memoryId)
+
+        editViewModel.getMemory().observe(this) {
+            binding.editTextTitle.setText(it.title)
+
+            val dateFormat = SimpleDateFormat.getDateInstance()
+            binding.editTextDate.setText(dateFormat.format(it.date))
+        }
+        editViewModel.getMedia().observe(this) {
+            mediaAdapter.submitList(it)
+        }
 
         binding.fabRecordAudio.setOnClickListener{ startRecorder(memoryId) }
         binding.fabTakePicture.setOnClickListener{ startCamera(memoryId) }
 
-        val memory = Memory(title, date, longitude, latitude)
-        memory.id = memoryId
-        editViewModel.initMemory(memory)
-        editViewModel.getMedia().observe(this) {
-            Log.d("EditActivity", "Media loaded: ${it.size}")
-            it.forEach {
-                Log.d("EditActivity", "${it.id}, ${it.memoryId}, ${it.path.toUri()}")
-            }
-            mediaAdapter.submitList(it) {
-                layoutManager.invalidateSpanAssignments()
-            }
-        }
-
-        binding.editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE))
-
-        var day: Int
-        var month: Int
-        var year: Int
-        try {
-            day = date.substring(0, 2).toInt()
-            month = date.substring(3, 5).toInt() - 1
-            year = date.substring(6, 10).toInt()
-            binding.editTextDate.setText(intent.getStringExtra(EXTRA_DATE))
-        }
-        catch (_: NumberFormatException) {
-            val c = Calendar.getInstance()
-            year = c.get(Calendar.YEAR)
-            month = c.get(Calendar.MONTH)
-            day = c.get(Calendar.DAY_OF_MONTH)
-            binding.editTextDate.setText("$day.$month.$year")
-        }
-
         val pickMultipleMedia = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) {
                 uris ->
             if (uris.isNotEmpty()) {
-                Log.d("EditActivity", "Selected URIs: $uris")
                 uris.forEach {
                     val mimeType = contentResolver.getType(it)
+                    contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
                     if (mimeType != null) {
                         val type: Type
@@ -155,21 +133,35 @@ class EditActivity : AppCompatActivity() {
         }
 
         binding.fabText.setOnClickListener {
-            editViewModel.insert(Media(memoryId, Type.TEXT, "Your Text Here"))
+            val mediaId = editViewModel.insert(Media(memoryId, Type.TEXT, "Your Text Here"))
+
+            val intent = Intent(applicationContext, MediaDetailActivity::class.java)
+            intent.putExtra(MediaDetailActivity.EXTRA_ID, mediaId)
+
+            mediaDetailActivityLauncher.launch(intent)
         }
 
         binding.editTextDate.isFocusable = false
 
         binding.editTextDate.setOnClickListener {
 
+            val calendar = GregorianCalendar()
+            calendar.time = editViewModel.getMemory().value!!.date
+
             val datePickerDialog = DatePickerDialog(
                 this,
-                { _, yearRes, monthOfYear, dayOfMonth ->
-                    binding.editTextDate.setText("$dayOfMonth.${monthOfYear+1}.$yearRes")
+                { _, year, month, day ->
+                    calendar.set(Calendar.YEAR, year)
+                    calendar.set(Calendar.MONTH, month)
+                    calendar.set(Calendar.DAY_OF_MONTH, day)
+                    editViewModel.getMemory().value!!.date = calendar.time
+
+                    val dateFormat = SimpleDateFormat.getDateInstance()
+                    binding.editTextDate.setText(dateFormat.format(calendar.time))
                 },
-                year,
-                month,
-                day
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
             )
 
             datePickerDialog.show()
@@ -192,26 +184,20 @@ class EditActivity : AppCompatActivity() {
 
     private fun saveMemory() {
         val title: String = binding.editTextTitle.text.toString()
-        val date: String = binding.editTextDate.text.toString()
+        val memory = editViewModel.getMemory().value!!
 
-        if (title.trim { it <= ' ' }.isEmpty() || date.trim { it <= ' ' }.isEmpty()) {
+        if (title.trim { it <= ' ' }.isEmpty()) {
             Toast.makeText(this, "Please insert a title and date", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val memory = editViewModel.getMemory()
         memory.title = title
-        memory.date = date
 
         editViewModel.update(memory)
     }
 
     companion object {
         const val EXTRA_ID = "at.jku.yourmemorylane.EXTRA_ID"
-        const val EXTRA_TITLE = "at.jku.yourmemorylane.EXTRA_TITLE"
-        const val EXTRA_DATE = "at.jku.yourmemorylane.EXTRA_DATE"
-        const val EXTRA_LONGITUDE = "at.jku.yourmemorylane.EXTRA_LONGITUDE"
-        const val EXTRA_LATITUDE = "at.jku.yourmemorylane.EXTRA_LATITUDE"
     }
 
 }

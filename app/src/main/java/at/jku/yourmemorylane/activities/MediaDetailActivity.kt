@@ -1,6 +1,7 @@
 package at.jku.yourmemorylane.activities
 
 import android.os.Bundle
+import android.widget.MediaController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
@@ -22,6 +23,9 @@ class MediaDetailActivity : AppCompatActivity() {
 
         mediaDetailViewModel.initMedia(id)
         mediaDetailViewModel.getMedia().observe(this) {
+            if (it == null) {
+                return@observe
+            }
             when (it.type) {
                 Type.IMAGE -> {
                     val binding = ActivityImageDetailBinding.inflate(layoutInflater)
@@ -40,6 +44,10 @@ class MediaDetailActivity : AppCompatActivity() {
                 Type.VIDEO -> {
                     val binding = ActivityVideoDetailBinding.inflate(layoutInflater)
                     setContentView(binding.root)
+
+                    val mediaController = MediaController(this)
+                    mediaController.setAnchorView(binding.vvVideoDetail)
+                    binding.vvVideoDetail.setMediaController(mediaController)
 
                     binding.vvVideoDetail.setVideoURI(it.path.toUri())
                     binding.vvVideoDetail.start()
@@ -63,7 +71,8 @@ class MediaDetailActivity : AppCompatActivity() {
                     }
 
                     binding.fabSaveText.setOnClickListener {
-                        mediaDetailViewModel.update(binding.etTextDetail.text.toString())
+                        mediaDetailViewModel.getMedia().value!!.path = binding.etTextDetail.text.toString()
+                        mediaDetailViewModel.update()
 
                         finish()
                     }

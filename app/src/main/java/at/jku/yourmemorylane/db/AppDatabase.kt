@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import at.jku.yourmemorylane.db.daos.MediaDao
 import at.jku.yourmemorylane.db.daos.MemoryDao
@@ -12,7 +13,8 @@ import at.jku.yourmemorylane.db.entities.Memory
 import kotlinx.coroutines.coroutineScope
 
 
-@Database(entities = [Memory::class, Media::class], version = 3)
+@Database(entities = [Memory::class, Media::class], version = 4)
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun memoryDao(): MemoryDao
     abstract fun mediaDao(): MediaDao

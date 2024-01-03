@@ -12,11 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import at.jku.yourmemorylane.activities.EditActivity
-import at.jku.yourmemorylane.activities.EditActivity.Companion.EXTRA_DATE
 import at.jku.yourmemorylane.activities.EditActivity.Companion.EXTRA_ID
-import at.jku.yourmemorylane.activities.EditActivity.Companion.EXTRA_LATITUDE
-import at.jku.yourmemorylane.activities.EditActivity.Companion.EXTRA_LONGITUDE
-import at.jku.yourmemorylane.activities.EditActivity.Companion.EXTRA_TITLE
 import at.jku.yourmemorylane.adapters.MemoryAdapter
 import at.jku.yourmemorylane.databinding.FragmentListBinding
 import at.jku.yourmemorylane.db.entities.Memory
@@ -64,10 +60,6 @@ class ListFragment : Fragment() {
             override fun onItemClick(memory: Memory) {
                 val intent = Intent(activity, EditActivity::class.java)
                 intent.putExtra(EXTRA_ID, memory.id)
-                intent.putExtra(EXTRA_TITLE, memory.title)
-                intent.putExtra(EXTRA_DATE, memory.date)
-                intent.putExtra(EXTRA_LONGITUDE, memory.longitude)
-                intent.putExtra(EXTRA_LATITUDE, memory.latitude)
 
                 editActivityLauncher.launch(intent)
             }
