@@ -3,13 +3,14 @@ package at.jku.yourmemorylane.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.VideoView
+import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import at.jku.yourmemorylane.databinding.ImageItemBinding
+import at.jku.yourmemorylane.databinding.TextItemBinding
 import at.jku.yourmemorylane.databinding.VideoItemBinding
 import at.jku.yourmemorylane.db.entities.Media
 import at.jku.yourmemorylane.db.entities.Type
@@ -33,6 +34,10 @@ class MediaAdapter:
                 val binding = VideoItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 return VideoHolder(binding)
             }
+            Type.TEXT.value -> {
+                val binding = TextItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                return TextHolder(binding)
+            }
         }
         val binding = ImageItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ImageHolder(binding)
@@ -49,8 +54,13 @@ class MediaAdapter:
             }
             Type.VIDEO.value -> {
                 val videoHolder = holder as VideoHolder
-                videoHolder.videoView.setVideoURI(media.path.toUri())
-                videoHolder.videoView.start()
+                Glide.with(holder.itemView.context)
+                    .load(media.path.toUri())
+                    .into(videoHolder.imageView)
+            }
+            Type.TEXT.value -> {
+                val textHolder = holder as TextHolder
+                textHolder.textView.text = media.path
             }
         }
 
@@ -69,7 +79,11 @@ class MediaAdapter:
     }
 
     inner class VideoHolder(binding: VideoItemBinding) : ViewHolder(binding.root) {
-        var videoView: VideoView = binding.vvVideoItem
+        var imageView: ImageView = binding.ivVideoItem
+    }
+
+    inner class TextHolder(binding: TextItemBinding) : ViewHolder(binding.root) {
+        var textView: TextView = binding.tvTextItem
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener) {

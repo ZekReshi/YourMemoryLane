@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
 import at.jku.yourmemorylane.databinding.ActivityImageDetailBinding
+import at.jku.yourmemorylane.databinding.ActivityTextDetailBinding
 import at.jku.yourmemorylane.databinding.ActivityVideoDetailBinding
 import at.jku.yourmemorylane.db.entities.Type
 import at.jku.yourmemorylane.viewmodels.MediaDetailViewModel
@@ -45,6 +46,24 @@ class MediaDetailActivity : AppCompatActivity() {
 
                     binding.fabDeleteVideo.setOnClickListener {
                         mediaDetailViewModel.delete()
+
+                        finish()
+                    }
+                }
+                Type.TEXT -> {
+                    val binding = ActivityTextDetailBinding.inflate(layoutInflater)
+                    setContentView(binding.root)
+
+                    binding.etTextDetail.setText(it.path)
+
+                    binding.fabDeleteText.setOnClickListener {
+                        mediaDetailViewModel.delete()
+
+                        finish()
+                    }
+
+                    binding.fabSaveText.setOnClickListener {
+                        mediaDetailViewModel.update(binding.etTextDetail.text.toString())
 
                         finish()
                     }

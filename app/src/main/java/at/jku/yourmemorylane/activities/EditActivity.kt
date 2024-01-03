@@ -57,6 +57,7 @@ class EditActivity : AppCompatActivity() {
             binding.fabGallery.show()
             binding.fabRecordAudio.show()
             binding.fabTakePicture.show()
+            binding.fabText.show()
             binding.fabSave.show()
             binding.fabEdit.hide()
             binding.editTextTitle.isEnabled = true
@@ -66,6 +67,7 @@ class EditActivity : AppCompatActivity() {
             binding.fabGallery.hide()
             binding.fabRecordAudio.hide()
             binding.fabTakePicture.hide()
+            binding.fabText.hide()
             binding.fabSave.hide()
             binding.fabEdit.show()
             binding.editTextTitle.isEnabled = false
@@ -76,6 +78,7 @@ class EditActivity : AppCompatActivity() {
         binding.fabGallery.hide()
         binding.fabRecordAudio.hide()
         binding.fabTakePicture.hide()
+        binding.fabText.hide()
         binding.editTextTitle.isEnabled = false
         binding.editTextDate.isEnabled = false
 
@@ -150,6 +153,11 @@ class EditActivity : AppCompatActivity() {
         binding.fabGallery.setOnClickListener {
             pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
         }
+
+        binding.fabText.setOnClickListener {
+            editViewModel.insert(Media(memoryId, Type.TEXT, "Your Text Here"))
+        }
+
         binding.editTextDate.isFocusable = false
 
         binding.editTextDate.setOnClickListener {

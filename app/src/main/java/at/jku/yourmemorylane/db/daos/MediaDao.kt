@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import at.jku.yourmemorylane.db.entities.Media
 import kotlinx.coroutines.flow.Flow
 
@@ -21,6 +22,9 @@ interface MediaDao {
 
     @Delete
     fun deleteAll(media: List<Media>): Int
+
+    @Update
+    fun update(media: Media): Int
 
     @Query("select * from media where id = :mediaId")
     fun getById(mediaId: Long): LiveData<Media>
