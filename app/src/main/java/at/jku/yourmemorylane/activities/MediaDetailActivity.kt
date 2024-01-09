@@ -8,11 +8,31 @@ import androidx.lifecycle.ViewModelProvider
 import at.jku.yourmemorylane.databinding.ActivityImageDetailBinding
 import at.jku.yourmemorylane.databinding.ActivityTextDetailBinding
 import at.jku.yourmemorylane.databinding.ActivityVideoDetailBinding
+import at.jku.yourmemorylane.db.entities.Media
 import at.jku.yourmemorylane.db.entities.Type
 import at.jku.yourmemorylane.viewmodels.MediaDetailViewModel
 import com.bumptech.glide.Glide
 
 class MediaDetailActivity : AppCompatActivity() {
+
+    private lateinit var media: Media;
+    private var mediaController: MediaController? = null
+
+    override fun onDestroy() {
+        super.onDestroy()
+        when (media.type) {
+            Type.IMAGE -> {
+            }
+            Type.VIDEO -> {
+                if(mediaController!=null)
+                    mediaController = null;
+            }
+            Type.TEXT -> {
+            }
+
+            else -> {}
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +46,7 @@ class MediaDetailActivity : AppCompatActivity() {
             if (it == null) {
                 return@observe
             }
+            media = it
             when (it.type) {
                 Type.IMAGE -> {
                     val binding = ActivityImageDetailBinding.inflate(layoutInflater)
@@ -45,8 +66,8 @@ class MediaDetailActivity : AppCompatActivity() {
                     val binding = ActivityVideoDetailBinding.inflate(layoutInflater)
                     setContentView(binding.root)
 
-                    val mediaController = MediaController(this)
-                    mediaController.setAnchorView(binding.vvVideoDetail)
+                    mediaController = MediaController(this)
+                    mediaController!!.setAnchorView(binding.vvVideoDetail)
                     binding.vvVideoDetail.setMediaController(mediaController)
 
                     binding.vvVideoDetail.setVideoURI(it.path.toUri())
