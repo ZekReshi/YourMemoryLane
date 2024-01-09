@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -15,7 +16,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -30,6 +34,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import java.io.InputStream
 import kotlin.random.Random
@@ -46,6 +51,7 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     private lateinit var mMap: GoogleMap
     private var addMemory = false
     private lateinit var editActivityLauncher: ActivityResultLauncher<Intent>
+    private var markerToId: MutableMap<String, Long> = HashMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +83,7 @@ class MapFragment : Fragment(), OnMapReadyCallback{
 
         _binding!!.addMemoryButton.setOnClickListener {
             addMemory = !addMemory
+            _binding!!.addMemoryButton.setImageResource(if (addMemory) R.drawable.baseline_cancel_24 else R.drawable.baseline_pin_drop_24)
         }
     }
 
@@ -84,6 +91,14 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         mMap = googleMap
         mMap.uiSettings.isMapToolbarEnabled = false
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.style))
+        mMap.setOnMarkerClickListener {
+            val intent = Intent(activity, EditActivity::class.java)
+            intent.putExtra(EditActivity.EXTRA_ID, markerToId.getValue(it.id))
+
+            editActivityLauncher.launch(intent)
+
+            true
+        }
 
         mMap.setOnMapClickListener {
             if (addMemory) {
@@ -115,18 +130,30 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                         val drawable = Drawable.createFromStream(inputStream, media.path)
 
                         val bitmap = (drawable as BitmapDrawable).bitmap
-// Scale it to 100 x 100
-// Scale it to 100 x 100
-                        val newDrawable: Drawable =
-                            BitmapDrawable(resources, Bitmap.createScaledBitmap(bitmap, 300, 300, true))
+
+                        val src = Bitmap.createScaledBitmap(bitmap, 150, 150, true)
+                        val newDrawable =
+                            RoundedBitmapDrawableFactory.create(resources, src)
+                        newDrawable.cornerRadius = src.width.coerceAtLeast(src.height) / 2.0f
                         markerOptions
-                            .icon(BitmapDescriptorFactory.fromBitmap((newDrawable as  BitmapDrawable).bitmap));
+                            .icon(BitmapDescriptorFactory.fromBitmap(newDrawable.toBitmap()))
+                    }
+                    else {
+                        val drawable = AppCompatResources.getDrawable(requireContext(), R.drawable.baseline_camera)
+                        val bitmap = drawable!!.toBitmap()
+
+                        val src = Bitmap.createScaledBitmap(bitmap, 150, 150, true)
+                        val newDrawable =
+                            RoundedBitmapDrawableFactory.create(resources, src)
+                        newDrawable.cornerRadius = src.width.coerceAtLeast(src.height) / 2.0f
+                        markerOptions
+                            .icon(BitmapDescriptorFactory.fromBitmap(newDrawable.toBitmap()))
                     }
                 } catch (_: SecurityException) {
                     Log.d("MapFragment", "Cannot access file")
                 }
-                mMap.
-                addMarker(markerOptions)
+                val marker = mMap.addMarker(markerOptions)
+                markerToId[marker!!.id] = it.id
             }
         } }
 
@@ -144,7 +171,7 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         }
         else {
             mMap.isMyLocationEnabled = true
-        };
+        }
     }
 
     @SuppressLint("MissingPermission")

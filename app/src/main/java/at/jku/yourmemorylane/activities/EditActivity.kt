@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import at.jku.yourmemorylane.R
 import at.jku.yourmemorylane.adapters.MediaAdapter
 import at.jku.yourmemorylane.databinding.ActivityEditBinding
 import at.jku.yourmemorylane.db.Converters
@@ -30,6 +31,7 @@ class EditActivity : AppCompatActivity() {
     private lateinit var mediaDetailActivityLauncher: ActivityResultLauncher<Intent>
     private lateinit var binding: ActivityEditBinding
     private lateinit var editViewModel: EditViewModel
+    private var edit = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,27 +59,26 @@ class EditActivity : AppCompatActivity() {
         recyclerView.adapter = mediaAdapter
 
         binding.fabEdit.setOnClickListener {
-            binding.fabGallery.show()
-            binding.fabRecordAudio.show()
-            binding.fabTakePicture.show()
-            binding.fabText.show()
-            binding.fabSave.show()
-            binding.fabEdit.hide()
-            binding.editTextTitle.isEnabled = true
-            binding.editTextDate.isEnabled = true
+            edit = !edit
+
+            if (edit) {
+                binding.fabGallery.show()
+                binding.fabRecordAudio.show()
+                binding.fabTakePicture.show()
+                binding.fabText.show()
+                binding.fabEdit.setImageResource(R.drawable.baseline_check_24)
+            }
+            else {
+                binding.fabGallery.hide()
+                binding.fabRecordAudio.hide()
+                binding.fabTakePicture.hide()
+                binding.fabText.hide()
+                binding.fabEdit.setImageResource(R.drawable.baseline_edit_note_24)
+                saveMemory()
+            }
+            binding.editTextTitle.isEnabled = edit
+            binding.editTextDate.isEnabled = edit
         }
-        binding.fabSave.setOnClickListener {
-            binding.fabGallery.hide()
-            binding.fabRecordAudio.hide()
-            binding.fabTakePicture.hide()
-            binding.fabText.hide()
-            binding.fabSave.hide()
-            binding.fabEdit.show()
-            binding.editTextTitle.isEnabled = false
-            binding.editTextDate.isEnabled = false
-            saveMemory()
-        }
-        binding.fabSave.hide()
         binding.fabGallery.hide()
         binding.fabRecordAudio.hide()
         binding.fabTakePicture.hide()
@@ -88,13 +89,16 @@ class EditActivity : AppCompatActivity() {
         title = "Edit Memory"
 
         val memoryId = intent.getLongExtra(EXTRA_ID, -1)
+        Log.d("EditActivity", memoryId.toString())
         editViewModel.initMemory(memoryId)
 
         editViewModel.getMemory().observe(this) {
-            binding.editTextTitle.setText(it.title)
+            if (it != null) {
+                binding.editTextTitle.setText(it.title)
 
-            val dateFormat = SimpleDateFormat.getDateInstance()
-            binding.editTextDate.setText(dateFormat.format(it.date))
+                val dateFormat = SimpleDateFormat.getDateInstance()
+                binding.editTextDate.setText(dateFormat.format(it.date))
+            }
         }
         editViewModel.getMedia().observe(this) {
             mediaAdapter.submitList(it)
