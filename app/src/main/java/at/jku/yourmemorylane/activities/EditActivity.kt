@@ -102,6 +102,9 @@ class EditActivity : AppCompatActivity() {
         }
         editViewModel.getMedia().observe(this) {
             mediaAdapter.submitList(it)
+            if (it.isEmpty()) {
+                binding.fabEdit.performClick()
+            }
         }
 
         binding.fabRecordAudio.setOnClickListener{ startRecorder(memoryId) }

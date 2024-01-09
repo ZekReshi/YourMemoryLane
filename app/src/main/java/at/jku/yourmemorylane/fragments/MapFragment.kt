@@ -139,7 +139,9 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                             .icon(BitmapDescriptorFactory.fromBitmap(newDrawable.toBitmap()))
                     }
                     else {
-                        val drawable = AppCompatResources.getDrawable(requireContext(), R.drawable.baseline_camera)
+                        val drawable = AppCompatResources.getDrawable(requireContext(),
+                            R.drawable.baseline_star_24
+                        )
                         val bitmap = drawable!!.toBitmap()
 
                         val src = Bitmap.createScaledBitmap(bitmap, 150, 150, true)
