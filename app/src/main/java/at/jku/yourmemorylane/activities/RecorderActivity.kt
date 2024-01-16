@@ -14,6 +14,7 @@ import android.os.SystemClock
 import android.util.Log
 import android.view.View
 import android.widget.Chronometer
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -140,6 +141,7 @@ class RecorderActivity : AppCompatActivity() {
             pauseButton.setImageResource(R.drawable.baseline_pause_24)
             playButton.isEnabled =true
             pauseButton.isEnabled =false
+            Toast.makeText(this, "Audio recorded!", Toast.LENGTH_SHORT).show()
         }
         else {
             timerDisplay.base = SystemClock.elapsedRealtime()
