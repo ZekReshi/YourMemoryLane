@@ -8,6 +8,7 @@ import at.jku.yourmemorylane.db.daos.MediaDao
 import at.jku.yourmemorylane.db.daos.MemoryDao
 import at.jku.yourmemorylane.db.entities.Media
 import at.jku.yourmemorylane.db.entities.Memory
+import at.jku.yourmemorylane.db.entities.Type
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -24,7 +25,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getImagesByMemoryId(id: Long): LiveData<List<Media>> {
-        return mediaDao.getMediaByMemoryIdAndType(id,"image")
+        return mediaDao.getMediaByMemoryIdAndType(id, Type.IMAGE)
     }
 
     fun insertMemory(long: Double, lat: Double): Memory {

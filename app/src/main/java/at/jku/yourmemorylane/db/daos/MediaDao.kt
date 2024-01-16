@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import at.jku.yourmemorylane.db.entities.Media
+import at.jku.yourmemorylane.db.entities.Type
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -33,6 +34,13 @@ interface MediaDao {
     fun getAllByMemoryId(memoryId: Long): LiveData<List<Media>>
 
     @Query("select * from media where memoryId = :memoryId and type LIKE '%' ||:type || '%'")
-    fun getMediaByMemoryIdAndType(memoryId: Long, type:String): LiveData<List<Media>>
+    fun getMediaByMemoryIdAndType(memoryId: Long, type: String): LiveData<List<Media>>
+
+    fun getMediaByMemoryIdAndType(memoryId: Long, type: Type): LiveData<List<Media>> {
+        return getMediaByMemoryIdAndType(memoryId, type.name)
+    }
+
+    @Query("select * from media where memoryId = :memoryId and type IN ('IMAGE', 'VIDEO')")
+    fun getVisualMediaByMemoryId(memoryId: Long): LiveData<List<Media>>
 
 }
