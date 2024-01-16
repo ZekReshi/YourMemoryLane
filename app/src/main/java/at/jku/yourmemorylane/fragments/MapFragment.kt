@@ -129,7 +129,16 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                         val inputStream: InputStream? = activity?.contentResolver?.openInputStream(media.path.toUri())
                         val drawable = Drawable.createFromStream(inputStream, media.path)
 
-                        val bitmap = (drawable as BitmapDrawable).bitmap
+                        var bitmap = (drawable as BitmapDrawable).bitmap
+
+                        if (bitmap.height > bitmap.width) {
+                            val cut = (bitmap.height - bitmap.width) / 2
+                            bitmap = Bitmap.createBitmap(bitmap, 0, cut, bitmap.width, bitmap.height - 2 * cut)
+                        }
+                        else if (bitmap.width > bitmap.height) {
+                            val cut = (bitmap.width - bitmap.height) / 2
+                            bitmap = Bitmap.createBitmap(bitmap, cut, 0, bitmap.width - 2 * cut, bitmap.height)
+                        }
 
                         val src = Bitmap.createScaledBitmap(bitmap, 150, 150, true)
                         val newDrawable =
