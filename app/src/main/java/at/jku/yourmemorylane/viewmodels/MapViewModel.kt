@@ -8,6 +8,7 @@ import at.jku.yourmemorylane.db.daos.MediaDao
 import at.jku.yourmemorylane.db.daos.MemoryDao
 import at.jku.yourmemorylane.db.entities.Media
 import at.jku.yourmemorylane.db.entities.Memory
+import at.jku.yourmemorylane.db.entities.Type
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

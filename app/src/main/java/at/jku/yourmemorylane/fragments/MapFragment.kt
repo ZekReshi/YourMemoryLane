@@ -143,20 +143,29 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                     val inputStream: InputStream? = activity?.contentResolver?.openInputStream(media.path.toUri())
                     val drawable = Drawable.createFromStream(inputStream, media.path)
 
-                    val bitmap = (drawable as BitmapDrawable).bitmap
+                        var bitmap = (drawable as BitmapDrawable).bitmap
 
-                    val src = Bitmap.createScaledBitmap(bitmap, 150, 150, true)
-                    val newDrawable =
-                        RoundedBitmapDrawableFactory.create(resources, src)
-                    newDrawable.cornerRadius = src.width.coerceAtLeast(src.height) / 2.0f
-                    markerOptions
-                        .icon(BitmapDescriptorFactory.fromBitmap(newDrawable.toBitmap()))
-                }
-                else {
-                    val drawable = AppCompatResources.getDrawable(requireContext(),
-                        R.drawable.baseline_star_24
-                    )
-                    val bitmap = drawable!!.toBitmap()
+                        if (bitmap.height > bitmap.width) {
+                            val cut = (bitmap.height - bitmap.width) / 2
+                            bitmap = Bitmap.createBitmap(bitmap, 0, cut, bitmap.width, bitmap.height - 2 * cut)
+                        }
+                        else if (bitmap.width > bitmap.height) {
+                            val cut = (bitmap.width - bitmap.height) / 2
+                            bitmap = Bitmap.createBitmap(bitmap, cut, 0, bitmap.width - 2 * cut, bitmap.height)
+                        }
+
+                        val src = Bitmap.createScaledBitmap(bitmap, 150, 150, true)
+                        val newDrawable =
+                            RoundedBitmapDrawableFactory.create(resources, src)
+                        newDrawable.cornerRadius = src.width.coerceAtLeast(src.height) / 2.0f
+                        markerOptions
+                            .icon(BitmapDescriptorFactory.fromBitmap(newDrawable.toBitmap()))
+                    }
+                    else {
+                        val drawable = AppCompatResources.getDrawable(requireContext(),
+                            R.drawable.baseline_star_24
+                        )
+                        val bitmap = drawable!!.toBitmap()
 
                     val src = Bitmap.createScaledBitmap(bitmap, 150, 150, true)
                     val newDrawable =
@@ -204,7 +213,7 @@ class MapFragment : Fragment(), OnMapReadyCallback{
                 var geofence = Geofence.Builder()
                     .setRequestId(it.id.toString())
                     .setCircularRegion(it.latitude, it.longitude, 500.0f)
-                    .setTransitionTypes( Geofence.GEOFENCE_TRANSITION_DWELL
+                    .setTransitionTypes( Geofence.GEOFENCE_TRANSITION_DWELL)
                     .setLoiteringDelay(20 * 1000)
                     .setExpirationDuration(Geofence.NEVER_EXPIRE)
                     .build()

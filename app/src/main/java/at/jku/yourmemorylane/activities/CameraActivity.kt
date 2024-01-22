@@ -191,14 +191,14 @@ class CameraActivity : AppCompatActivity() {
                         Log.e(ContentValues.TAG, "Finalize  event")
                         if (!recordEvent.hasError()) {
                             val msg = "Video capture succeeded: ${recordEvent.outputResults.outputUri}"
-                            Toast.makeText(this, "Video capture succeeded: ${recordEvent.outputResults.outputUri}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Video recorded!", Toast.LENGTH_SHORT).show()
 
                             Log.d(ContentValues.TAG, msg)
                         } else {
                             recording?.close()
                             recording = null
                             Log.e(ContentValues.TAG, "Video capture ends with error: ${recordEvent.error}")
-                            Toast.makeText(this, "Video capture ends with error: ${recordEvent.error}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "An error occurred!", Toast.LENGTH_SHORT).show()
 
                         }
                         cameraActionButton
@@ -235,11 +235,11 @@ class CameraActivity : AppCompatActivity() {
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
-                    Log.e(ContentValues.TAG, "Photo capture failed: ${exc.message}", exc)
+                    Log.e(ContentValues.TAG, "An error occurred!", exc)
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults){
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
+                    val msg = "Picture taken!"
                     Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(ContentValues.TAG, msg)
                 }

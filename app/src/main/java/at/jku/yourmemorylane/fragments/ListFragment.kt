@@ -54,7 +54,7 @@ class ListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(this.context)
         recyclerView.setHasFixedSize(true)
 
-        val memoryAdapter = MemoryAdapter()
+        val memoryAdapter = MemoryAdapter(this)
         recyclerView.adapter = memoryAdapter
         memoryAdapter.setOnItemClickListener(object : MemoryAdapter.OnItemClickListener {
             override fun onItemClick(memory: Memory) {
