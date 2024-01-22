@@ -23,7 +23,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         return memories
     }
 
-    fun getImagesByMemoryId(id: Long): LiveData<List<Media>> {
+    fun getImagesByMemoryId(id: Long): List<Media> {
         return mediaDao.getMediaByMemoryIdAndType(id,"image")
     }
 

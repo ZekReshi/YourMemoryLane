@@ -2,6 +2,8 @@ package at.jku.yourmemorylane.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -9,6 +11,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -28,6 +31,10 @@ import at.jku.yourmemorylane.activities.EditActivity
 import at.jku.yourmemorylane.databinding.FragmentMapBinding
 import at.jku.yourmemorylane.db.AppDatabase
 import at.jku.yourmemorylane.viewmodels.MapViewModel
+import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.GeofencingClient
+import com.google.android.gms.location.GeofencingRequest
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -43,6 +50,7 @@ import kotlin.random.Random
 class MapFragment : Fragment(), OnMapReadyCallback{
 
     private lateinit var mapViewModel: MapViewModel
+    private lateinit var geofencingClient: GeofencingClient;
     private var _binding: FragmentMapBinding? = null
 
     // This property is only valid between onCreateView and
@@ -52,6 +60,13 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     private var addMemory = false
     private lateinit var editActivityLauncher: ActivityResultLauncher<Intent>
     private var markerToId: MutableMap<String, Long> = HashMap()
+    private val geofencePendingIntent: PendingIntent by lazy {
+        val intent = Intent(requireContext(), GeofenceBroadcastReceiver::class.java)
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+        // addGeofences() and removeGeofences().
+        PendingIntent.getBroadcast(requireContext(), 0, intent, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -118,61 +133,105 @@ class MapFragment : Fragment(), OnMapReadyCallback{
             position(LatLng(it.latitude, it.longitude)).
             title(it.title)
 
-            mapViewModel.getImagesByMemoryId(it.id).observe(viewLifecycleOwner) {
-                images ->
-                try {
-                    if(images != null && images.isNotEmpty())
-                    {
-                        val length = images.size
-                        val randIndex = Random.nextInt(0,length)
-                        val media = images[randIndex]
-                        val inputStream: InputStream? = activity?.contentResolver?.openInputStream(media.path.toUri())
-                        val drawable = Drawable.createFromStream(inputStream, media.path)
+            val images= mapViewModel.getImagesByMemoryId(it.id)
+            try {
+                if(images != null && images.isNotEmpty())
+                {
+                    val length = images.size
+                    val randIndex = Random.nextInt(0,length)
+                    val media = images[randIndex]
+                    val inputStream: InputStream? = activity?.contentResolver?.openInputStream(media.path.toUri())
+                    val drawable = Drawable.createFromStream(inputStream, media.path)
 
-                        val bitmap = (drawable as BitmapDrawable).bitmap
+                    val bitmap = (drawable as BitmapDrawable).bitmap
 
-                        val src = Bitmap.createScaledBitmap(bitmap, 150, 150, true)
-                        val newDrawable =
-                            RoundedBitmapDrawableFactory.create(resources, src)
-                        newDrawable.cornerRadius = src.width.coerceAtLeast(src.height) / 2.0f
-                        markerOptions
-                            .icon(BitmapDescriptorFactory.fromBitmap(newDrawable.toBitmap()))
-                    }
-                    else {
-                        val drawable = AppCompatResources.getDrawable(requireContext(),
-                            R.drawable.baseline_star_24
-                        )
-                        val bitmap = drawable!!.toBitmap()
-
-                        val src = Bitmap.createScaledBitmap(bitmap, 150, 150, true)
-                        val newDrawable =
-                            RoundedBitmapDrawableFactory.create(resources, src)
-                        newDrawable.cornerRadius = src.width.coerceAtLeast(src.height) / 2.0f
-                        markerOptions
-                            .icon(BitmapDescriptorFactory.fromBitmap(newDrawable.toBitmap()))
-                    }
-                } catch (_: SecurityException) {
-                    Log.d("MapFragment", "Cannot access file")
+                    val src = Bitmap.createScaledBitmap(bitmap, 150, 150, true)
+                    val newDrawable =
+                        RoundedBitmapDrawableFactory.create(resources, src)
+                    newDrawable.cornerRadius = src.width.coerceAtLeast(src.height) / 2.0f
+                    markerOptions
+                        .icon(BitmapDescriptorFactory.fromBitmap(newDrawable.toBitmap()))
                 }
+                else {
+                    val drawable = AppCompatResources.getDrawable(requireContext(),
+                        R.drawable.baseline_star_24
+                    )
+                    val bitmap = drawable!!.toBitmap()
+
+                    val src = Bitmap.createScaledBitmap(bitmap, 150, 150, true)
+                    val newDrawable =
+                        RoundedBitmapDrawableFactory.create(resources, src)
+                    newDrawable.cornerRadius = src.width.coerceAtLeast(src.height) / 2.0f
+                    markerOptions
+                        .icon(BitmapDescriptorFactory.fromBitmap(newDrawable.toBitmap()))
+                }
+            } catch (_: SecurityException) {
+                Log.d("MapFragment", "Cannot access file")
+            }
                 val marker = mMap.addMarker(markerOptions)
                 markerToId[marker!!.id] = it.id
             }
-        } }
+        }
 
 
         if (ContextCompat.checkSelfPermission(
                 context as Context,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+            ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
                 context as Context,
                 Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                context as Context,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
 
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION),1)
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_BACKGROUND_LOCATION),1)
         }
         else {
             mMap.isMyLocationEnabled = true
+            manageGeoFences()
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun manageGeoFences() {
+        geofencingClient = LocationServices.getGeofencingClient(this.activity as Activity)
+       val geofenceList= mutableListOf<Geofence>()
+        mapViewModel.getMemories().observe(viewLifecycleOwner) { memories ->  run {
+            memories.forEach {
+
+                var geofence = Geofence.Builder()
+                    .setRequestId(it.id.toString())
+                    .setCircularRegion(it.latitude, it.longitude, 500.0f)
+                    .setTransitionTypes( Geofence.GEOFENCE_TRANSITION_DWELL
+                    .setLoiteringDelay(20 * 1000)
+                    .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                    .build()
+                geofenceList.add(geofence)
+
+            };
+            if(!geofenceList.isEmpty()){
+                Log.i("GEOFENCE",geofenceList.size.toString())
+
+                var geofencingRequest = GeofencingRequest.Builder().apply {
+                addGeofences(geofenceList)
+                setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+            }.build()
+            geofencingClient?.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
+                addOnSuccessListener {
+                    // Geofences added
+                    //
+                    Log.i("GEOFENCE","success")
+
+                }
+                addOnFailureListener {
+                    Log.i("GEOFENCE","error")
+                    // Failed to add geofences
+                    // ...
+                }
+            }}
+        }
         }
     }
 
@@ -184,6 +243,7 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         grantResults: IntArray
     ) {
         mMap.isMyLocationEnabled=true;
+        manageGeoFences()
     }
 
     override fun onDestroyView() {
@@ -191,3 +251,4 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         _binding = null
     }
 }
+

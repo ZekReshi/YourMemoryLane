@@ -33,6 +33,6 @@ interface MediaDao {
     fun getAllByMemoryId(memoryId: Long): LiveData<List<Media>>
 
     @Query("select * from media where memoryId = :memoryId and type LIKE '%' ||:type || '%'")
-    fun getMediaByMemoryIdAndType(memoryId: Long, type:String): LiveData<List<Media>>
+    fun getMediaByMemoryIdAndType(memoryId: Long, type:String): List<Media>
 
 }

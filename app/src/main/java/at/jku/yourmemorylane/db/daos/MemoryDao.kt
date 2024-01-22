@@ -18,7 +18,6 @@ interface MemoryDao {
 
     @Query("select * from memory where title like :title")
     fun getAllByTitle(title: String): LiveData<List<Memory>>
-
     @Insert
     fun insert(memory: Memory): Long
 
@@ -27,4 +26,6 @@ interface MemoryDao {
 
     @Delete
     fun delete(memory: Memory): Int
+    @Query("select * from memory where id IN (:ids)")
+    fun getByIds(ids: List<Long>): List<Memory>
 }
