@@ -7,13 +7,13 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,7 +41,6 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import java.io.InputStream
 import kotlin.random.Random
@@ -99,6 +98,22 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         _binding!!.addMemoryButton.setOnClickListener {
             addMemory = !addMemory
             _binding!!.addMemoryButton.setImageResource(if (addMemory) R.drawable.baseline_cancel_24 else R.drawable.baseline_pin_drop_24)
+            val typedValue = TypedValue()
+            val theme = requireContext().theme
+            var color: Int =0;
+            if(addMemory){
+                theme.resolveAttribute(
+                    com.google.android.material.R.attr.colorError,
+                    typedValue,
+                    true
+                )
+            }
+            else {
+                theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
+
+            }
+            color = typedValue.data
+            _binding!!.addMemoryButton.backgroundTintList = ColorStateList.valueOf(color);
         }
     }
 

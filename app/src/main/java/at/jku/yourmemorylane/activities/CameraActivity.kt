@@ -184,7 +184,7 @@ class CameraActivity : AppCompatActivity() {
             .start(ContextCompat.getMainExecutor(this)) { recordEvent ->
                 when(recordEvent) {
                     is VideoRecordEvent.Start -> {
-                        cameraActionButton.setImageResource(R.drawable.baseline_record)
+                        cameraActionButton.setImageResource(R.drawable.baseline_stop_record)
                         //flipButton.isEnabled = false
                     }
                     is VideoRecordEvent.Finalize -> {

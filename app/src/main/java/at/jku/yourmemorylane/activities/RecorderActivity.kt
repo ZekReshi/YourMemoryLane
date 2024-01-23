@@ -137,7 +137,7 @@ class RecorderActivity : AppCompatActivity() {
 
             timerDisplay.stop()
 
-            recordButton.setImageResource(R.drawable.baseline_mic_)
+            recordButton.setImageResource(R.drawable.baseline_record)
             pauseButton.setImageResource(R.drawable.baseline_pause_24)
             playButton.isEnabled =true
             pauseButton.isEnabled =false
@@ -150,7 +150,7 @@ class RecorderActivity : AppCompatActivity() {
             playButton.isEnabled=false
             pauseButton.isEnabled=true
             pauseButton.setImageResource(R.drawable.baseline_pause_24)
-            recordButton.setImageResource(R.drawable.baseline_record)
+            recordButton.setImageResource(R.drawable.baseline_stop_record)
             mediaRecorder =
                 MediaRecorder(this)
             mediaRecorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
