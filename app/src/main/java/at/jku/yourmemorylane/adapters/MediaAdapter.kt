@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import at.jku.yourmemorylane.databinding.AudioItemBinding
 import at.jku.yourmemorylane.databinding.ImageItemBinding
 import at.jku.yourmemorylane.databinding.TextItemBinding
 import at.jku.yourmemorylane.databinding.VideoItemBinding
@@ -38,6 +39,10 @@ class MediaAdapter:
                 val binding = TextItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 return TextHolder(binding)
             }
+            Type.AUDIO.value -> {
+                val binding = AudioItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                return AudioHolder(binding)
+            }
         }
         val binding = ImageItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ImageHolder(binding)
@@ -62,6 +67,9 @@ class MediaAdapter:
                 val textHolder = holder as TextHolder
                 textHolder.textView.text = media.path
             }
+            Type.AUDIO.value -> {
+                val textHolder = holder as AudioHolder
+            }
         }
 
         with(holder.itemView) {
@@ -85,6 +93,8 @@ class MediaAdapter:
     inner class TextHolder(binding: TextItemBinding) : ViewHolder(binding.root) {
         var textView: TextView = binding.tvTextItem
     }
+
+    inner class AudioHolder(binding: AudioItemBinding) : ViewHolder(binding.root)
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
         onClickListener = listener

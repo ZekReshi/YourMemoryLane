@@ -1,10 +1,16 @@
 package at.jku.yourmemorylane.activities
 
+import android.media.AudioAttributes
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.SystemClock
 import android.widget.MediaController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
+import at.jku.yourmemorylane.R
+import at.jku.yourmemorylane.databinding.ActivityAudioDetailBinding
 import at.jku.yourmemorylane.databinding.ActivityImageDetailBinding
 import at.jku.yourmemorylane.databinding.ActivityTextDetailBinding
 import at.jku.yourmemorylane.databinding.ActivityVideoDetailBinding
@@ -12,11 +18,14 @@ import at.jku.yourmemorylane.db.entities.Media
 import at.jku.yourmemorylane.db.entities.Type
 import at.jku.yourmemorylane.viewmodels.MediaDetailViewModel
 import com.bumptech.glide.Glide
+import kotlin.math.ceil
 
 class MediaDetailActivity : AppCompatActivity() {
 
     private lateinit var media: Media;
     private var mediaController: MediaController? = null
+    private var mediaPlayer: MediaPlayer? = null
+    private var playing = false
 
     override fun onDestroy() {
         super.onDestroy()
@@ -24,13 +33,16 @@ class MediaDetailActivity : AppCompatActivity() {
             Type.IMAGE -> {
             }
             Type.VIDEO -> {
-                if(mediaController!=null)
-                    mediaController = null;
+                if (mediaController != null)
+                    mediaController = null
             }
             Type.TEXT -> {
             }
-
-            else -> {}
+            Type.AUDIO -> {
+                if (mediaPlayer != null)
+                    mediaPlayer?.stop()
+                    mediaPlayer = null
+            }
         }
     }
 
@@ -98,8 +110,59 @@ class MediaDetailActivity : AppCompatActivity() {
                         finish()
                     }
                 }
+                Type.AUDIO -> {
+                    val binding = ActivityAudioDetailBinding.inflate(layoutInflater)
+                    setContentView(binding.root)
 
-                else -> {}
+                    mediaPlayer = MediaPlayer.create(this, media.path.toUri()).apply {
+                        setAudioAttributes(
+                            AudioAttributes.Builder()
+                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                .setUsage(AudioAttributes.USAGE_MEDIA)
+                                .setLegacyStreamType(AudioManager.STREAM_MUSIC)
+                                .build()
+                        )
+                        setOnCompletionListener {
+                            binding.fabPlayDetail.performClick()
+                            binding.chronTimerDetail.base = SystemClock.elapsedRealtime()
+                        }
+                        var minutes = (duration / 60000).toString()
+                        if (minutes.length == 1) {
+                            minutes = "0$minutes"
+                        }
+                        var seconds = ceil((duration / 1000f) % 60).toInt().toString()
+                        if (seconds.length == 1) {
+                            seconds = "0$seconds"
+                        }
+                        binding.chronTimerDetail.format = "%s/$minutes:$seconds"
+                        binding.chronTimerDetail.base = SystemClock.elapsedRealtime()
+                    }
+
+                    binding.fabPlayDetail.setOnClickListener {
+                        if (playing) {
+                            mediaPlayer?.pause()
+                            binding.chronTimerDetail.stop()
+                            binding.fabPlayDetail.setImageResource(R.drawable.baseline_play_arrow)
+                        }
+                        else {
+                            mediaPlayer?.start()
+                            binding.chronTimerDetail.start()
+                            binding.fabPlayDetail.setImageResource(R.drawable.baseline_pause_24)
+                        }
+                        playing = !playing
+                    }
+
+                    binding.fabRewindDetail.setOnClickListener {
+                        mediaPlayer?.seekTo(0)
+                        binding.chronTimerDetail.base = SystemClock.elapsedRealtime()
+                    }
+
+                    binding.fabDeleteAudio.setOnClickListener {
+                        mediaDetailViewModel.delete()
+
+                        finish()
+                    }
+                }
             }
         }
     }

@@ -43,6 +43,7 @@ class RecorderActivity : AppCompatActivity() {
     private lateinit var recordButton: FloatingActionButton
     private lateinit var timerDisplay: Chronometer
     private var _binding: ActivityRecorderBinding? = null
+    private var playing = false
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -56,7 +57,6 @@ class RecorderActivity : AppCompatActivity() {
         memoryId = intent.getLongExtra("memoryId",-1)
         viewModel = ViewModelProvider(this)[RecorderViewModel::class.java]
         setContentView(binding.root)
-        val root: View = binding.root
 
         timerDisplay = binding.timerDisplay
         recordButton = binding.recordButton;
@@ -64,7 +64,6 @@ class RecorderActivity : AppCompatActivity() {
         pauseButton = binding.pauseButton
         pauseButton.isEnabled = false
         playButton.isEnabled =false
-        pauseButton.setImageResource(R.drawable.baseline_pause_24)
         recordButton.setOnClickListener{
             recordAudio()
         }
@@ -74,7 +73,6 @@ class RecorderActivity : AppCompatActivity() {
         playButton.setOnClickListener{
             playRecording()
         }
-        playButton.setImageResource(R.drawable.baseline_headphones_24)
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.RECORD_AUDIO
@@ -94,17 +92,28 @@ class RecorderActivity : AppCompatActivity() {
     }
 
     private fun playRecording() {
-        val uri = Uri.parse(lastRecorded)
-        mediaPlayer = MediaPlayer.create(this,uri).apply {
-            setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setLegacyStreamType(AudioManager.STREAM_MUSIC)
-                    .build()
-            )
-            start()
+        if (playing) {
+            playButton.setImageResource(R.drawable.baseline_headphones_24)
+            mediaPlayer.stop()
         }
+        else {
+            val uri = Uri.parse(lastRecorded)
+            playButton.setImageResource(R.drawable.baseline_pause_24)
+            mediaPlayer = MediaPlayer.create(this, uri).apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setLegacyStreamType(AudioManager.STREAM_MUSIC)
+                        .build()
+                )
+                setOnCompletionListener {
+                    binding.playButton.performClick()
+                }
+                start()
+            }
+        }
+        playing = !playing
     }
 
     private fun pauseRecording() {
@@ -112,15 +121,15 @@ class RecorderActivity : AppCompatActivity() {
             recordingIsPaused = if(recordingIsPaused){
                 pauseButton.setImageResource(R.drawable.baseline_pause_24)
                 mediaRecorder!!.resume()
-                timerDisplay.base =SystemClock.elapsedRealtime() + recordingStopped;
+                timerDisplay.base = SystemClock.elapsedRealtime() + recordingStopped
                 timerDisplay.start()
-                false;
+                false
             } else {
                 pauseButton.setImageResource(R.drawable.baseline_play_arrow)
                 mediaRecorder!!.pause()
-                recordingStopped = timerDisplay.base -SystemClock.elapsedRealtime()
+                recordingStopped = timerDisplay.base - SystemClock.elapsedRealtime()
                 timerDisplay.stop()
-                true;
+                true
             }
 
         }
@@ -190,6 +199,7 @@ class RecorderActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        mediaPlayer.stop()
         _binding = null
     }
 
