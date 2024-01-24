@@ -4,6 +4,10 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View.FOCUSABLE
+import android.view.View.INVISIBLE
+import android.view.View.NOT_FOCUSABLE
+import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
@@ -67,6 +71,8 @@ class EditActivity : AppCompatActivity() {
                 binding.fabTakePicture.show()
                 binding.fabText.show()
                 binding.fabEdit.setImageResource(R.drawable.baseline_check_24)
+                binding.ivEditTitle.visibility = VISIBLE
+                binding.ivEditDate.visibility = VISIBLE
             }
             else {
                 binding.fabGallery.hide()
@@ -74,17 +80,23 @@ class EditActivity : AppCompatActivity() {
                 binding.fabTakePicture.hide()
                 binding.fabText.hide()
                 binding.fabEdit.setImageResource(R.drawable.baseline_edit_note_24)
+                binding.ivEditTitle.visibility = INVISIBLE
+                binding.ivEditDate.visibility = INVISIBLE
                 saveMemory()
             }
-            binding.editTextTitle.isEnabled = edit
-            binding.editTextDate.isEnabled = edit
+            binding.editTextTitle.isFocusable = edit
+            binding.editTextTitle.isFocusableInTouchMode = edit
+            binding.tvDate.isClickable = edit
         }
         binding.fabGallery.hide()
         binding.fabRecordAudio.hide()
         binding.fabTakePicture.hide()
         binding.fabText.hide()
-        binding.editTextTitle.isEnabled = false
-        binding.editTextDate.isEnabled = false
+        binding.editTextTitle.isFocusable = false
+        binding.editTextTitle.isFocusableInTouchMode = false
+        binding.tvDate.isClickable = false
+        binding.ivEditTitle.visibility = INVISIBLE
+        binding.ivEditDate.visibility = INVISIBLE
 
         title = "Edit Memory"
 
@@ -97,7 +109,7 @@ class EditActivity : AppCompatActivity() {
                 binding.editTextTitle.setText(it.title)
 
                 val dateFormat = SimpleDateFormat.getDateInstance()
-                binding.editTextDate.setText(dateFormat.format(it.date))
+                binding.tvDate.text = dateFormat.format(it.date)
             }
         }
         editViewModel.getMedia().observe(this) {
@@ -148,9 +160,7 @@ class EditActivity : AppCompatActivity() {
             mediaDetailActivityLauncher.launch(intent)
         }
 
-        binding.editTextDate.isFocusable = false
-
-        binding.editTextDate.setOnClickListener {
+        binding.tvDate.setOnClickListener {
 
             val calendar = GregorianCalendar()
             calendar.time = editViewModel.getMemory().value!!.date
@@ -164,7 +174,7 @@ class EditActivity : AppCompatActivity() {
                     editViewModel.getMemory().value!!.date = calendar.time
 
                     val dateFormat = SimpleDateFormat.getDateInstance()
-                    binding.editTextDate.setText(dateFormat.format(calendar.time))
+                    binding.tvDate.text = dateFormat.format(calendar.time)
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
