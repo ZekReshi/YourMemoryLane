@@ -56,7 +56,7 @@ class ListFragment : Fragment() {
 
         val memoryAdapter = MemoryAdapter(this)
         recyclerView.adapter = memoryAdapter
-        memoryAdapter.setOnItemClickListener(object : MemoryAdapter.OnItemClickListener {
+        memoryAdapter.setOnItemClickListener(object : MemoryAdapter.OnMemoryClickListener {
             override fun onItemClick(memory: Memory) {
                 val intent = Intent(activity, EditActivity::class.java)
                 intent.putExtra(EXTRA_ID, memory.id)
