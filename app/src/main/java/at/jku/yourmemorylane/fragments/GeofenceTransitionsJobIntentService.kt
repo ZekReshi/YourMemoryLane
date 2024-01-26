@@ -121,7 +121,7 @@ class GeofenceTransitionsJobIntentService : JobIntentService() {
         val image = if( images != null)  (images[Random.nextInt(images.size)]) else null
         // Define the notification settings.
         builder
-            .setSmallIcon(R.drawable.baseline_camera)
+            .setSmallIcon(R.drawable.appicon)
             .setColor(Color.RED)
             .setContentTitle("Revisit Memory")
             .setContentText("You have visited this place before and made a memory '"+ memory.title +"' here, go look at it!")
