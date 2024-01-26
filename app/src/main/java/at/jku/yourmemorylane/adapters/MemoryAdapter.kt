@@ -1,6 +1,5 @@
 package at.jku.yourmemorylane.adapters
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -11,16 +10,14 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import at.jku.yourmemorylane.activities.MediaDetailActivity
 import at.jku.yourmemorylane.databinding.MemoryItemBinding
 import at.jku.yourmemorylane.db.AppDatabase
-import at.jku.yourmemorylane.db.entities.Media
 import at.jku.yourmemorylane.db.entities.Memory
 import java.text.SimpleDateFormat
 
 class MemoryAdapter(private val lifecyclerOwner: LifecycleOwner):
     ListAdapter<Memory, MemoryAdapter.MemoryHolder>(DIFF_CALLBACK) {
-    private lateinit var onClickListener: OnItemClickListener
+    private lateinit var onClickListener: OnMemoryClickListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemoryHolder {
         val binding = MemoryItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -40,6 +37,13 @@ class MemoryAdapter(private val lifecyclerOwner: LifecycleOwner):
 
         val visualMediaAdapter = VisualMediaAdapter()
         recyclerView.adapter = visualMediaAdapter
+        visualMediaAdapter.setOnItemClickListener(object : VisualMediaAdapter.OnVisualMediaItemClickListener {
+            override fun onItemClick() {
+                if (this@MemoryAdapter::onClickListener.isInitialized && position != NO_POSITION) {
+                    onClickListener.onItemClick(memory)
+                }
+            }
+        })
 
         AppDatabase.getInstance(holder.itemView.context).mediaDao().getVisualMediaByMemoryId(memory.id).observe(lifecyclerOwner) {
             visualMediaAdapter.submitList(it)
@@ -61,11 +65,11 @@ class MemoryAdapter(private val lifecyclerOwner: LifecycleOwner):
         var rvVisualMedia: RecyclerView = binding.rvVisualMedia
     }
 
-    fun setOnItemClickListener(listener: OnItemClickListener) {
+    fun setOnItemClickListener(listener: OnMemoryClickListener) {
         onClickListener = listener
     }
 
-    interface OnItemClickListener {
+    interface OnMemoryClickListener {
         fun onItemClick(memory: Memory)
     }
 
