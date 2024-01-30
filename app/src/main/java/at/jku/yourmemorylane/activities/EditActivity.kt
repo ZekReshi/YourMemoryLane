@@ -36,6 +36,7 @@ class EditActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditBinding
     private lateinit var editViewModel: EditViewModel
     private var edit = false
+    private var delete = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,12 +65,14 @@ class EditActivity : AppCompatActivity() {
 
         binding.fabEdit.setOnClickListener {
             edit = !edit
+            delete = false
 
             if (edit) {
                 binding.fabGallery.show()
                 binding.fabRecordAudio.show()
                 binding.fabTakePicture.show()
                 binding.fabText.show()
+                binding.fabDelete.show()
                 binding.fabEdit.setImageResource(R.drawable.baseline_check_24)
                 binding.ivEditTitle.visibility = VISIBLE
                 binding.ivEditDate.visibility = VISIBLE
@@ -79,19 +82,36 @@ class EditActivity : AppCompatActivity() {
                 binding.fabRecordAudio.hide()
                 binding.fabTakePicture.hide()
                 binding.fabText.hide()
+                binding.fabDelete.hide()
                 binding.fabEdit.setImageResource(R.drawable.baseline_edit_note_24)
                 binding.ivEditTitle.visibility = INVISIBLE
                 binding.ivEditDate.visibility = INVISIBLE
                 saveMemory()
             }
+
             binding.editTextTitle.isFocusable = edit
             binding.editTextTitle.isFocusableInTouchMode = edit
             binding.tvDate.isClickable = edit
+            binding.fabDelete.setImageResource(R.drawable.baseline_cancel_24)
         }
+
+        binding.fabDelete.setOnClickListener {
+            if (delete) {
+                editViewModel.delete()
+                finish()
+            }
+            else {
+                binding.fabDelete.setImageResource(R.drawable.baseline_priority_high_24)
+            }
+
+            delete = !delete
+        }
+
         binding.fabGallery.hide()
         binding.fabRecordAudio.hide()
         binding.fabTakePicture.hide()
         binding.fabText.hide()
+        binding.fabDelete.hide()
         binding.editTextTitle.isFocusable = false
         binding.editTextTitle.isFocusableInTouchMode = false
         binding.tvDate.isClickable = false

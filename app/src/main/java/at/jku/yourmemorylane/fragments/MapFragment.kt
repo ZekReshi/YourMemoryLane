@@ -49,7 +49,7 @@ import kotlin.random.Random
 class MapFragment : Fragment(), OnMapReadyCallback{
 
     private lateinit var mapViewModel: MapViewModel
-    private lateinit var geofencingClient: GeofencingClient;
+    private lateinit var geofencingClient: GeofencingClient
     private var _binding: FragmentMapBinding? = null
 
     // This property is only valid between onCreateView and
@@ -100,8 +100,7 @@ class MapFragment : Fragment(), OnMapReadyCallback{
             _binding!!.addMemoryButton.setImageResource(if (addMemory) R.drawable.baseline_cancel_24 else R.drawable.baseline_pin_drop_24)
             val typedValue = TypedValue()
             val theme = requireContext().theme
-            var color: Int =0;
-            if(addMemory){
+            if (addMemory){
                 theme.resolveAttribute(
                     com.google.android.material.R.attr.colorError,
                     typedValue,
@@ -110,10 +109,9 @@ class MapFragment : Fragment(), OnMapReadyCallback{
             }
             else {
                 theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
-
             }
-            color = typedValue.data
-            _binding!!.addMemoryButton.backgroundTintList = ColorStateList.valueOf(color);
+            val color = typedValue.data
+            _binding!!.addMemoryButton.backgroundTintList = ColorStateList.valueOf(color)
         }
     }
 
@@ -133,6 +131,12 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         mMap.setOnMapClickListener {
             if (addMemory) {
                 addMemory = false
+                _binding!!.addMemoryButton.setImageResource(R.drawable.baseline_pin_drop_24)
+                val theme = requireContext().theme
+                val typedValue = TypedValue()
+                theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
+                val color = typedValue.data
+                _binding!!.addMemoryButton.backgroundTintList = ColorStateList.valueOf(color)
 
                 val memory = mapViewModel.insertMemory(it.longitude, it.latitude)
 
@@ -144,9 +148,10 @@ class MapFragment : Fragment(), OnMapReadyCallback{
         }
 
         mapViewModel.getMemories().observe(viewLifecycleOwner) { memories ->memories.forEach{
-            val markerOptions = MarkerOptions().
-            position(LatLng(it.latitude, it.longitude)).
-            title(it.title)
+            val markerOptions = MarkerOptions()
+                .position(LatLng(it.latitude, it.longitude))
+                .title(it.title)
+                .anchor(.5f, .5f)
 
             val images= mapViewModel.getImagesByMemoryId(it.id)
             try {

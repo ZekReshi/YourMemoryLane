@@ -41,16 +41,12 @@ class EditViewModel(application: Application) : AndroidViewModel(application) {
         memoryDao.update(memory)
     }
 
-    fun delete(memory: Memory) {
-        memoryDao.delete(memory)
+    fun delete() {
+        memoryDao.delete(memory.value!!)
     }
 
     fun insert(media: Media): Long {
         return mediaDao.insert(media)
-    }
-
-    fun delete(media: List<Media>) {
-        mediaDao.deleteAll(media)
     }
 
 }
