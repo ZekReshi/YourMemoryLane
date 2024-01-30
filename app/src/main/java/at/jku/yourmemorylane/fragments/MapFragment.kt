@@ -56,6 +56,21 @@ class MapFragment : Fragment(), OnMapReadyCallback{
     // onDestroyView.
     private val binding get() = _binding!!
     private lateinit var mMap: GoogleMap
+    @SuppressLint("MissingPermission")
+    private val permissionResultReceiver = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        Log.i("permission","WHAT")
+        if (permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) ||
+            permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false)
+        ) {
+            mMap.isMyLocationEnabled = true;
+        }
+        if (permissions.getOrDefault(Manifest.permission.ACCESS_BACKGROUND_LOCATION, false)
+        ) {
+            manageGeoFences()
+        }
+    }
     private var addMemory = false
     private lateinit var editActivityLauncher: ActivityResultLauncher<Intent>
     private var markerToId: MutableMap<String, Long> = HashMap()
@@ -209,16 +224,25 @@ class MapFragment : Fragment(), OnMapReadyCallback{
             ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
                 context as Context,
                 Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            permissionResultReceiver.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION));
+
+        }
+        else {
+            mMap.isMyLocationEnabled = true
+        }
+        if (ContextCompat.checkSelfPermission(
                 context as Context,
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
 
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_BACKGROUND_LOCATION),1)
+            permissionResultReceiver.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION));
+
         }
         else {
-            mMap.isMyLocationEnabled = true
             manageGeoFences()
         }
     }
